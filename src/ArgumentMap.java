@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class ArgumentMap {
 
@@ -45,7 +44,7 @@ public class ArgumentMap {
 				
 				if( (i+1 < args.length) && isValue(args[i+1]) )  {
 					
-					System.out.println("put key: " + args[i] + " val: " + args[i+1]);
+					//System.out.println("put key: " + args[i] + " val: " + args[i+1]);
 					map.put(args[i], args[i+1]);
 					i = i+1;
 					

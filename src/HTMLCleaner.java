@@ -31,12 +31,22 @@ public class HTMLCleaner {
 		//Should not group if white-space is present
 		//2. Replace with white-space
 		//3. Return altered string
-	
-		String regex = "&(?!\\s)(.|\\n)*?;";
+		
+//		String regex = "&(?!\\s)[\\s\\S]*?;";
+		String regex = "&(?!\\s)\\S*?;";
+		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(html);
 
+//		if(m.matches()) {
+//			return m.replaceAll(" ");
+//		} else {
+//			return html;
+//		}
+		
+//		return m.replaceAll(" ");
 		return m.replaceAll(" ");
+		
 	}
 
 	/**
@@ -50,7 +60,11 @@ public class HTMLCleaner {
 	public static String stripComments(String html) {
 		// TODO
 		
-		String regex = "<!--(.|\\s)*?-->"; 
+		//FIX: Dont use pipe, try to use \\s\\S
+		//String regex = "<!--(.|\\s)*?-->";
+		
+		
+		String regex = "<!--[\\S\\s]*?-->"; 
 		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(html);
@@ -69,11 +83,13 @@ public class HTMLCleaner {
 	public static String stripTags(String html) {
 		// TODO
 		
-		String regex = "<\\/*(.|\\n)*?>";
+		//String regex = "<\\/*(.|\\n)*?>";
+		
+		String regex = "<\\/*[\\s\\S]*?>";
 		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(html);
-	
+		
 		return m.replaceAll(" ");
 	}
 
@@ -95,9 +111,10 @@ public class HTMLCleaner {
 	 * @return text without that HTML element
 	 */
 	public static String stripElement(String html, String name) {
-		// TODO
 		
-		String regex = String.format("<(?i)(%s)(.|\\s)*?(<\\/(?i)(%s)(.|\\s)*?>)",name, name);
+		//String regex = String.format("<(?i)(%s)(.|\\s)*?(<\\/(?i)(%s)(.|\\s)*?>)", name, name);
+		
+		String regex = String.format("<(?i)(%s)[\\s\\S]*?(<\\/(?i)(%s)[\\s\\S]*?>)", name, name);
 		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(html);
@@ -106,15 +123,50 @@ public class HTMLCleaner {
 	}
 	
 	public static String stripPunctuations(String txt) {
-		// TODO
 		
-		String regex = String.format("\\W+");
+		String regex = String.format("(?![a-zÀ-ÿ])\\W");
 		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(txt);
 		
 		return m.replaceAll(" ");
 	}
+
+	public static String stripNumbers(String txt) {
+		
+		String regex = String.format("\\d");
+		
+		Pattern p = Pattern.compile(regex);
+		
+		Matcher m = p.matcher(txt);
+		
+		return m.replaceAll(" ");
+
+	}
+	
+public static String cleanLines(String txt) {
+		
+		String regex = String.format("\\s{2,}");
+		
+		Pattern p = Pattern.compile(regex);
+		
+		Matcher m = p.matcher(txt);
+		
+		return m.replaceAll(" ");
+
+	}
+
+// Proffessor Recomended
+public static String stripNonWords(String txt) {
+	
+	String regex = String.format("(?U)[^\\p{Alpha}\\p{Space}]+?");
+	
+	Pattern p = Pattern.compile(regex);
+	
+	Matcher m = p.matcher(txt);
+	
+	return m.replaceAll(" ");
+}
 
 	/**
 	 * Removes all HTML (including any CSS and JavaScript).
@@ -132,18 +184,22 @@ public class HTMLCleaner {
 		html = stripElement(html, "script");
 
 		html = stripTags(html);
-		
 		html = stripEntities(html);
 		
-		
-		
-		// Modifications
+		html = stripNumbers(html);
 		html = stripPunctuations(html);
-
-		html = html.trim();
+		
+		//html = stripNonWords(html);
+		
+		html = cleanLines(html);
 		
 		html = html.toLowerCase();
+		html = html.trim();
+		
+		//System.out.println("html: " + html);
 		
 		return html; 
 	}
+
+	
 }

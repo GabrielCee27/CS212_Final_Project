@@ -13,12 +13,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.json.JSONArray;
-// External lib
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONWriter;
-
 public class Driver {
 	
 	private static WordIndex wordIndex = new WordIndex();
@@ -53,7 +47,7 @@ public class Driver {
 			
 			try {
 				indexFile.createNewFile();
-				//System.out.println("Created a new index file.");
+				System.out.println("Created a new index file.");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -74,10 +68,10 @@ public class Driver {
 			
 			while((str = reader.readLine()) != null) {
 				
-				//System.out.println(str);
-				txt += str;
+				txt += " ";
 				
-			} // While
+				txt += str;
+			}
 			
 			// Clean up text
 			txt = HTMLCleaner.stripHTML(txt);
@@ -101,84 +95,103 @@ public class Driver {
 		
 		String cleanedTxt;
 		
+		
 		try {
 			
 			cleanedTxt = readFile(file);
 			
-			wordIndex.addAll(cleanedTxt.split(" "), path, 0);
+			//System.out.println("cleaned text:" + cleanedTxt + ".");
 			
-			//System.out.println(wordIndex.toString());
+			if(!cleanedTxt.equals("")) {
+				wordIndex.addAll(cleanedTxt.split(" "), path, 0);
+			}
+			
+			System.out.println("wordIndex: \n" + wordIndex.toString());
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
 	
-	public static JSONObject convertIndexToJSON() {
+	public static String convertIndexToJSONstring() {
 		
-		JSONObject json = new JSONObject();
-			
-		//System.out.println("copyWords: " + index.copyWords());	
+		String str = "{\n";
 		
-		for( String word : wordIndex.copyWords() ) {
+		List <String> words = wordIndex.copyWords();
+		
+		for(int i=0; i < words.size(); i++) {
 			
-			//System.out.println("word: " + word);
+			str += "\t";
 			
-			for(String p : wordIndex.copyPaths(word)) {
-				//System.out.println("Path:" + p);
+			str += String.format("\"%s\"", words.toArray()[i]) + ": {\n";
+			
+			List <String> paths = wordIndex.copyPaths(words.toArray()[i].toString());
+			
+			for(int j=0; j < paths.size(); j++) {
 				
-				JSONObject subObj = new JSONObject();
+				str += "\t\t";
 				
-				List <Integer> list = wordIndex.copyPositions(word, p);
+				str += String.format("\"%s\"", paths.toArray()[j]) + ": [\n";
 				
-				try {
+				
+				List <Integer> positions = wordIndex.copyPositions(words.toArray()[i].toString(), paths.toArray()[j].toString());
+				
+				for(int k = 0; k < positions.size(); k++) {
 					
-					subObj.put(p, list);
+					str += "\t\t\t";
 					
-					json.put(word, subObj);
-					
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					str += positions.toArray()[k].toString();
+						
+					if(k != positions.size()-1) {
+						str += ",";
+					}
+						
+					str += "\n";
 				}
+				
+				str += "\t\t]";
+				
+				if(j != paths.size()-1) {
+					str += ",";
+				}
+				
+				str += "\n";
 				
 			}
 			
+			str += "\t}";
+			
+			if(i != words.size()-1) {
+				str += ",";
+			}
+			
+			str += "\n";
 		}
 		
-		//System.out.println("json: \n" + json.toString());
+		str += "}";
 		
-		return json;
+		//System.out.println("JSON String: \n" + str);
+		return str;
 	}
 	
-	//FIX: need to indent the inner objects
-	//BUG: there should be no NULLs passed
-	public static void writeJSONtoIndexFile(JSONObject obj, File file) {
+	
+	public static void writeToIndexFile(String str, File file) {
 		
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			
-			try {
-				
-				writer.write(obj.toString(4));
-				
-				System.out.println("JSON Object Written:");
-				System.out.println(obj.toString(4));
-				
-				
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			writer.write(str);
 			
-			writer.close();	
+			writer.close();
 			
-		} catch (IOException e1) {
+			System.out.println("Index File Created at " + file.toPath().toString());
+			
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
+				
 		
 	}
 	
@@ -192,9 +205,11 @@ public class Driver {
 		
 		String ext = name.substring(name.lastIndexOf(".") + 1);
 		
+		ext = ext.toLowerCase();
+		
 		//System.out.println("ext: " + ext);
 		
-		if(ext.toLowerCase().equals(ext)) {
+		if(ext.equals("html") || ext.equals("htm")) {
 			return true;
 		}
 		
@@ -213,10 +228,14 @@ public class Driver {
 		
 		if(f.isFile()) {
 			
-			System.out.println(f.toPath().toString());
-			System.out.println(f.getName());
 			
-			buildIndex(f, f.toPath().toString());
+			System.out.println("\nFile: " + f.toPath().toString());
+//			System.out.println(f.getName());
+			
+			if(isHTML(f)) {
+				System.out.println("Is an HTML file");
+				buildIndex(f, f.toPath().toString());
+			}
 				
 		} else if(f.isDirectory()) {
 			
@@ -224,9 +243,10 @@ public class Driver {
 				recTraverse(recF);
 			}
 			
-		} 
+		} else {
+			return;
+		}
 		
-		return;
 	}
 	
 
@@ -238,41 +258,37 @@ public class Driver {
 		
 		Path p = null;
 		
-		JSONObject obj = null;
-		
 		if(argMap.hasFlag("-path") && argMap.hasValue("-path")) {
 			
 			p = Paths.get(argMap.getString("-path"));
 			
 			File pFile = new File(p.normalize().toString());
 			
+			// populate wordIndex
 			recTraverse(pFile);
 				
 		} else {
 			System.out.println("No path given.");
 		}
 		
-		//CONVERT WORDINDEX TO JSON
+		//Covert wordIndex TO JSON String
 		
-		obj = convertIndexToJSON();
-		
-		//CREATING THE INDEX FILE
+		String jsnStr = convertIndexToJSONstring();
+		System.out.println("JSON String: \n" + jsnStr);
+
+		//Creating the index file
 		
 		if(argMap.hasFlag("-index")) {
 		
 			Path indexPath = retrieveIndexPath(argMap); //FIX: Make argMap global?
 			File indexFile = createIndexFile(indexPath);
 			
-			if(obj != null) {
-				//Populate indexFile with wordIndex in JSON format
-				writeJSONtoIndexFile(obj, indexFile);
-			}
+			writeToIndexFile(jsnStr, indexFile);
 			
 		} else {
 			System.out.println("No index file created.");
 		}
 
 	} // main
-	
 
 }

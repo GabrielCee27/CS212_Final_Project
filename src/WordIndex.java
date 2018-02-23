@@ -51,7 +51,6 @@ public class WordIndex {
 			//already has key
 			
 			//check if path is set
-			
 			if(idx.get(word).containsKey(path)) {
 				//contains word and path
 				
@@ -67,7 +66,20 @@ public class WordIndex {
 					idx.get(word).put(path, set);
 				}
 				
+			} else if(!idx.get(word).isEmpty()) {
+				
+				//should update current pathMap
+				
+				Set <Integer> set = new HashSet<>();
+				
+				set.add(position);
+				
+				idx.get(word).putIfAbsent(path, set);
+				
+				
 			} else { //does not have path
+				
+				//create a new pathMap
 				
 				Map<String, Set<Integer>> pathMap = new TreeMap<>();
 				
@@ -78,9 +90,6 @@ public class WordIndex {
 				pathMap.put(path, set);
 				
 				idx.put(word, pathMap);
-				
-				
-				
 			}
 			
 			
@@ -133,7 +142,13 @@ public class WordIndex {
 		
 		for(int i = start; i < words.length; i++) {
 //			System.out.println(words[i] + " at " + (i+1));
+			
+//			if(!words[i].equals("")) {
+//				add(words[i], path, i+1);
+//			}
+			
 			add(words[i], path, i+1);
+
 		}
 	}
 
@@ -236,7 +251,7 @@ public class WordIndex {
 		 * returning.
 		 */
 		
-		if(idx.get(word) == null) {
+		if(idx.get(word).equals(null)) {
 			return null;
 		}
 		
@@ -254,6 +269,8 @@ public class WordIndex {
 		List <String> list = new ArrayList<>();
 		
 		list.addAll(idx.get(word).keySet());
+		
+		Collections.sort(list);
 		
 		return list;
 	}
