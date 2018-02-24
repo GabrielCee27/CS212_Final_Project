@@ -44,7 +44,7 @@ public class Driver {
 			
 			try {
 				indexFile.createNewFile();
-				System.out.println("Created a new index file.");
+				//System.out.println("Created a new index file.");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -173,7 +173,7 @@ public class Driver {
 			
 			writer.close();
 			
-			System.out.println("Index File Created at " + file.toPath().toString());
+			//System.out.println("Index File Created at " + file.toPath().toString());
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -212,7 +212,7 @@ public class Driver {
 		if(f.isFile()) {
 			
 			
-			System.out.println("\nFile: " + f.toPath().toString());
+			//System.out.println("\nFile: " + f.toPath().toString());
 //			System.out.println(f.getName());
 			
 			if(isHTMLorHTM(f)) {
@@ -236,7 +236,7 @@ public class Driver {
 	public static void main(String[] args) {
 		
 		ArgumentMap argMap = new ArgumentMap(args);
-		System.out.println("args: " + Arrays.toString(args));
+		//System.out.println("args: " + Arrays.toString(args));
 		//System.out.println("numFlags(): " + argMap.numFlags());
 		
 		Path p = null;
@@ -257,7 +257,7 @@ public class Driver {
 		//Covert wordIndex TO JSON String
 		
 		String jsnStr = convertIndexToJSONstring();
-		System.out.println("JSON String: \n" + jsnStr);
+		//System.out.println("JSON String: \n" + jsnStr);
 
 		//Creating the index file
 		
