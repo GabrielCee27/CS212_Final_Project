@@ -1,8 +1,5 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.Map;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,7 +54,11 @@ public class Driver {
 		return indexFile;
 	}
 	
-	
+	/**
+	 * Reads a file line by line. Returns a String representation of the file.
+	 * There should be no new-lines.
+	 * 
+	 */
 	public static String readFile(File file) throws IOException {
 		try(
 				BufferedReader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);
@@ -68,23 +69,11 @@ public class Driver {
 			
 			while((str = reader.readLine()) != null) {
 				
+				// Put a space b/w two words originally separated by a new-line
 				txt += " ";
 				
 				txt += str;
 			}
-			
-			// Clean up text
-			txt = HTMLCleaner.stripHTML(txt);
-			
-			//System.out.println("Cleaned txt: \n" + txt);
-			
-			//String [] txtSplit = txt.split(" ");
-			
-//			for(int i=0; i < txtSplit.length; i++) {
-//				System.out.println("i = " + i + ": " + txtSplit[i]);
-//			}
-			
-			//System.out.println("txtSplit: " + txtSplit[]);
 			
 			return txt;
 		}
@@ -93,26 +82,27 @@ public class Driver {
 	
 	public static void buildIndex(File file, String path) {
 		
-		String cleanedTxt;
-		
+		String txt;
 		
 		try {
 			
-			cleanedTxt = readFile(file);
+			txt = readFile(file);
 			
-			//System.out.println("cleaned text:" + cleanedTxt + ".");
+			txt = HTMLCleaner.stripHTML(txt);
 			
-			if(!cleanedTxt.equals("")) {
-				wordIndex.addAll(cleanedTxt.split(" "), path, 0);
+			if(!txt.equals("")) { 
+				// Avoid empty files
+				wordIndex.addAll(txt.split(" "), path);
 			}
 			
-			System.out.println("wordIndex: \n" + wordIndex.toString());
+			//System.out.println("wordIndex: \n" + wordIndex.toString());
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 	}
+	
 	
 	public static String convertIndexToJSONstring() {
 		
@@ -133,7 +123,6 @@ public class Driver {
 				str += "\t\t";
 				
 				str += String.format("\"%s\"", paths.toArray()[j]) + ": [\n";
-				
 				
 				List <Integer> positions = wordIndex.copyPositions(words.toArray()[i].toString(), paths.toArray()[j].toString());
 				
@@ -170,8 +159,7 @@ public class Driver {
 		}
 		
 		str += "}";
-		
-		//System.out.println("JSON String: \n" + str);
+
 		return str;
 	}
 	
@@ -195,13 +183,9 @@ public class Driver {
 		
 	}
 	
-	public static boolean isHTML(File f) {
+	public static boolean isHTMLorHTM(File f) {
 	
 		String name = f.getName();
-		
-		//int i = name.lastIndexOf(".");
-	
-		//System.out.println("extention: " + name.substring(name.lastIndexOf(".") + 1));
 		
 		String ext = name.substring(name.lastIndexOf(".") + 1);
 		
@@ -212,7 +196,6 @@ public class Driver {
 		if(ext.equals("html") || ext.equals("htm")) {
 			return true;
 		}
-		
 		
 		return false;
 	}
@@ -232,8 +215,8 @@ public class Driver {
 			System.out.println("\nFile: " + f.toPath().toString());
 //			System.out.println(f.getName());
 			
-			if(isHTML(f)) {
-				System.out.println("Is an HTML file");
+			if(isHTMLorHTM(f)) {
+				//System.out.println("Is an HTML file");
 				buildIndex(f, f.toPath().toString());
 			}
 				

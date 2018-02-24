@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +12,8 @@ import java.util.TreeMap;
 public class WordIndex {
 
 	/**
-	 * Stores a mapping of words to the positions the words were found.
+	 * Stores a mapping of words to the positions the words were found according to path.
 	 */
-	//private Map<String, Set<Integer>> index;
 	
 	private Map<String, Map<String, Set<Integer>>> idx;
 	
@@ -24,12 +22,6 @@ public class WordIndex {
 	 * Initializes the index.
 	 */
 	public WordIndex() {
-		/*
-		 * TODO: Choose the best data structures. Keep in mind you do not want
-		 * duplicates, and do not need to store anything in sorted order.
-		 */
-		//index = new HashMap<>();
-		//index = new TreeMap<>();
 		
 		idx = new TreeMap<>();
 	}
@@ -43,9 +35,7 @@ public class WordIndex {
 	 *            position word was found
 	 */
 	public void add(String word, String path, int position) {
-		/*
-		 * TODO: Make sure you initialize any inner data structures.
-		 */
+
 		
 		if(idx.containsKey(word)) {
 			//already has key
@@ -98,7 +88,6 @@ public class WordIndex {
 			//insert key
 			//create a new set and initialize with position
 			
-			
 			Set <Integer> set = new HashSet<>();
 			set.add(position); //adds to set if not already present
 			
@@ -121,36 +110,11 @@ public class WordIndex {
 	 * @see #addAll(String[], int)
 	 */
 	public void addAll(String[] words, String path) {
-		
-		addAll(words, path, 1);
-	}
-
-	/**
-	 * Adds the array of words at once, assuming the first word in the array is
-	 * at the provided starting position
-	 *
-	 * @param words
-	 *            array of words to add
-	 * @param start
-	 *            starting position
-	 */
-	public void addAll(String[] words, String path, int start) {
-		/*
-		 * TODO: Add each word using the start position. (You can call your
-		 * other methods here.)
-		 */
-		
-		for(int i = start; i < words.length; i++) {
-//			System.out.println(words[i] + " at " + (i+1));
-			
-//			if(!words[i].equals("")) {
-//				add(words[i], path, i+1);
-//			}
-			
+		for(int i = 0; i < words.length; i++) {	
 			add(words[i], path, i+1);
-
 		}
 	}
+
 
 	/**
 	 * Returns the number of times a word was found (i.e. the number of
@@ -161,9 +125,6 @@ public class WordIndex {
 	 * @return number of times the word was found
 	 */
 	public int count(String word, String path) {
-		/*
-		 * TODO: Return the count.
-		 */
 		
 		//check if the word is even in the index
 		if(idx.get(word) == null) {
@@ -179,13 +140,6 @@ public class WordIndex {
 	 * @return number of words
 	 */
 	public int words() {
-		/*
-		 * TODO: Return number of words. No counting is necessary!
-		 */
-		
-		//return the number of keys
-		//return index.size();
-		
 		return idx.size();
 	}
 
@@ -197,9 +151,6 @@ public class WordIndex {
 	 * @return true if the word is stored in the index
 	 */
 	public boolean contains(String word) {
-		/*
-		 * TODO: Return whether the word is in the index.
-		 */
 		
 		if(idx.containsKey(word)) {
 			return true;
@@ -217,20 +168,12 @@ public class WordIndex {
 	 * @see Collections#sort(List)
 	 */
 	public List<String> copyWords() {
-		/*
-		 * TODO: Create a copy of the words in the index as a list, and sort
-		 * before returning.
-		 */
 		
 		List <String> list = new ArrayList<>();
 		
 		list.addAll(idx.keySet());
 		
 		Collections.sort(list);
-		
-		//Collections.reverse(list);
-		
-		//System.out.println("list: " + list.toString());
 		
 		return list;
 	}
@@ -246,10 +189,6 @@ public class WordIndex {
 	 * @see Collections#sort(List)
 	 */
 	public List<Integer> copyPositions(String word, String path) {
-		/*
-		 * TODO: Create a copy of the positions for the word, and sort before
-		 * returning.
-		 */
 		
 		if(idx.get(word).equals(null)) {
 			return null;

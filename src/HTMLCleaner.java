@@ -123,9 +123,20 @@ public class HTMLCleaner {
 	}
 	
 	public static String stripPunctuations(String txt) {
+		//1
+		//String regex = String.format("(?![a-zA-ZÀ-ÿ])\\W*");
 		
-		String regex = String.format("(?![a-zÀ-ÿ])\\W");
+		String regex = String.format("(?![a-zA-ZÀ-ÿ])[\\W\\_]");
+
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(txt);
 		
+		return m.replaceAll(" ");
+	}
+	
+	public static String stripUnderscore(String txt) {
+		String regex = String.format("\\_");
+
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(txt);
 		
@@ -159,7 +170,7 @@ public static String cleanLines(String txt) {
 // Proffessor Recomended
 public static String stripNonWords(String txt) {
 	
-	String regex = String.format("(?U)[^\\p{Alpha}\\p{Space}]+?");
+	String regex = String.format("(?U)[^\\p{Alpha}\\p{Space}]+");
 	
 	Pattern p = Pattern.compile(regex);
 	
@@ -178,18 +189,23 @@ public static String stripNonWords(String txt) {
 	public static String stripHTML(String html) {
 		
 		html = stripComments(html);
-
+		
 		html = stripElement(html, "head");	
 		html = stripElement(html, "style");
 		html = stripElement(html, "script");
 
-		html = stripTags(html);
 		html = stripEntities(html);
+		html = stripTags(html);
+		
+//		html = stripEntities(html);
 		
 		html = stripNumbers(html);
-		html = stripPunctuations(html);
 		
 		//html = stripNonWords(html);
+		
+		html = stripPunctuations(html);
+		
+		//html = stripUnderscore(html);
 		
 		html = cleanLines(html);
 		
