@@ -37,14 +37,11 @@ public class ArgumentMap {
 		
 		for(int i=0; i < args.length; i++) {
 			
-			//System.out.println("args[" + i + "]: " + args[i]);
-			
 			if(isFlag(args[i])) {
 				//System.out.println("flag");
 				
 				if( (i+1 < args.length) && isValue(args[i+1]) )  {
 					
-					//System.out.println("put key: " + args[i] + " val: " + args[i+1]);
 					map.put(args[i], args[i+1]);
 					i = i+1;
 					
@@ -61,9 +58,6 @@ public class ArgumentMap {
 				}
 					
 			} 
-			//else {
-//				System.out.println("Not a flag");
-//			}
 		
 		}; //loop
 		
@@ -76,7 +70,6 @@ public class ArgumentMap {
 	 */
 	public static boolean isFlag(String arg) {
 		//valid flags: "-path" or "-index"
-		//"-url"
 		
 		arg.trim();
 		
@@ -100,7 +93,7 @@ public class ArgumentMap {
 			return false;
 		}	
 		
-		return true; // TODO
+		return true;
 	}
 
 	/**
@@ -121,7 +114,7 @@ public class ArgumentMap {
 	 * @return true if the flag is in the argument map
 	 */
 	public boolean hasFlag(String flag) {
-		return map.containsKey(flag); // TODO (1 LOC)
+		return map.containsKey(flag); 
 	}
 
 	/**
@@ -139,7 +132,7 @@ public class ArgumentMap {
 			return true;
 		}
 		
-		return false; // TODO (1 LOC)
+		return false;
 	}
 
 	/**
@@ -151,7 +144,7 @@ public class ArgumentMap {
 	 * @return value as a String or null if flag or value was not found
 	 */
 	public String getString(String flag) {
-		return map.get(flag); // TODO (1 LOC)
+		return map.get(flag); 
 	}
 
 	/**

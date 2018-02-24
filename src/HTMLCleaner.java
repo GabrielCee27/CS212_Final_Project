@@ -16,40 +16,6 @@ import java.util.regex.Matcher;
 public class HTMLCleaner {
 
 	/**
-	 * Replaces all HTML entities with a single space. For example,
-	 * "2010&ndash;2012" will become "2010 2012".
-	 *
-	 * @param html
-	 *            text including HTML entities to remove
-	 * @return text without any HTML entities
-	 */
-	public static String stripEntities(String html) {
-		// TODO
-		//1. Find all HTML entities
-		//Starts with '&' ends with ';'
-		//Can appear more than once
-		//Should not group if white-space is present
-		//2. Replace with white-space
-		//3. Return altered string
-		
-//		String regex = "&(?!\\s)[\\s\\S]*?;";
-		String regex = "&(?!\\s)\\S*?;";
-		
-		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(html);
-
-//		if(m.matches()) {
-//			return m.replaceAll(" ");
-//		} else {
-//			return html;
-//		}
-		
-//		return m.replaceAll(" ");
-		return m.replaceAll(" ");
-		
-	}
-
-	/**
 	 * Replaces all HTML comments with a single space. For example, "A<!-- B
 	 * -->C" will become "A C".
 	 *
@@ -58,34 +24,8 @@ public class HTMLCleaner {
 	 * @return text without any HTML comments
 	 */
 	public static String stripComments(String html) {
-		// TODO
-		
-		//FIX: Dont use pipe, try to use \\s\\S
-		//String regex = "<!--(.|\\s)*?-->";
-		
 		
 		String regex = "<!--[\\S\\s]*?-->"; 
-		
-		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(html);
-		
-		return m.replaceAll(" ");
-	}
-
-	/**
-	 * Replaces all HTML tags with a single space. For example, "A<b>B</b>C"
-	 * will become "A B C".
-	 *
-	 * @param html
-	 *            text including HTML tags to remove
-	 * @return text without any HTML tags
-	 */
-	public static String stripTags(String html) {
-		// TODO
-		
-		//String regex = "<\\/*(.|\\n)*?>";
-		
-		String regex = "<\\/*[\\s\\S]*?>";
 		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(html);
@@ -112,8 +52,6 @@ public class HTMLCleaner {
 	 */
 	public static String stripElement(String html, String name) {
 		
-		//String regex = String.format("<(?i)(%s)(.|\\s)*?(<\\/(?i)(%s)(.|\\s)*?>)", name, name);
-		
 		String regex = String.format("<(?i)(%s)[\\s\\S]*?(<\\/(?i)(%s)[\\s\\S]*?>)", name, name);
 		
 		Pattern p = Pattern.compile(regex);
@@ -121,26 +59,42 @@ public class HTMLCleaner {
 		
 		return m.replaceAll(" ");
 	}
-	
-	public static String stripPunctuations(String txt) {
-		//1
-		//String regex = String.format("(?![a-zA-ZÀ-ÿ])\\W*");
-		
-		String regex = String.format("(?![a-zA-ZÀ-ÿ])[\\W\\_]");
 
+	/**
+	 * Replaces all HTML tags with a single space. For example, "A<b>B</b>C"
+	 * will become "A B C".
+	 *
+	 * @param html
+	 *            text including HTML tags to remove
+	 * @return text without any HTML tags
+	 */
+	public static String stripTags(String html) {
+		
+		String regex = "<\\/*[\\s\\S]*?>";
+		
 		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(txt);
+		Matcher m = p.matcher(html);
 		
 		return m.replaceAll(" ");
 	}
-	
-	public static String stripUnderscore(String txt) {
-		String regex = String.format("\\_");
 
-		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(txt);
+	/**
+	 * Replaces all HTML entities with a single space. For example,
+	 * "2010&ndash;2012" will become "2010 2012".
+	 *
+	 * @param html
+	 *            text including HTML entities to remove
+	 * @return text without any HTML entities
+	 */
+	public static String stripEntities(String html) {
 		
+		String regex = "&(?!\\s)\\S*?;";
+		
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(html);
+	
 		return m.replaceAll(" ");
+		
 	}
 
 	public static String stripNumbers(String txt) {
@@ -155,6 +109,28 @@ public class HTMLCleaner {
 
 	}
 	
+	// Proffessor Recomended
+	public static String stripNonWords(String txt) {
+		
+		String regex = String.format("(?U)[^\\p{Alpha}\\p{Space}]+");
+		
+		Pattern p = Pattern.compile(regex);
+		
+		Matcher m = p.matcher(txt);
+		
+		return m.replaceAll(" ");
+	}
+
+public static String stripPunctuations(String txt) {
+		
+		String regex = String.format("(?![a-zA-ZÀ-ÿ])[\\W\\_]");
+	
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(txt);
+		
+		return m.replaceAll(" ");
+	}
+
 public static String cleanLines(String txt) {
 		
 		String regex = String.format("\\s{2,}");
@@ -167,19 +143,7 @@ public static String cleanLines(String txt) {
 
 	}
 
-// Proffessor Recomended
-public static String stripNonWords(String txt) {
-	
-	String regex = String.format("(?U)[^\\p{Alpha}\\p{Space}]+");
-	
-	Pattern p = Pattern.compile(regex);
-	
-	Matcher m = p.matcher(txt);
-	
-	return m.replaceAll(" ");
-}
-
-	/**
+/**
 	 * Removes all HTML (including any CSS and JavaScript).
 	 *
 	 * @param html
@@ -194,10 +158,9 @@ public static String stripNonWords(String txt) {
 		html = stripElement(html, "style");
 		html = stripElement(html, "script");
 
-		html = stripEntities(html);
 		html = stripTags(html);
 		
-//		html = stripEntities(html);
+		html = stripEntities(html);
 		
 		html = stripNumbers(html);
 		
@@ -205,14 +168,10 @@ public static String stripNonWords(String txt) {
 		
 		html = stripPunctuations(html);
 		
-		//html = stripUnderscore(html);
-		
 		html = cleanLines(html);
 		
 		html = html.toLowerCase();
 		html = html.trim();
-		
-		//System.out.println("html: " + html);
 		
 		return html; 
 	}

@@ -22,7 +22,6 @@ public class WordIndex {
 	 * Initializes the index.
 	 */
 	public WordIndex() {
-		
 		idx = new TreeMap<>();
 	}
 
@@ -130,6 +129,7 @@ public class WordIndex {
 		if(idx.get(word) == null) {
 			return 0;
 		} 
+		
 		Set <Integer> set = idx.get(word).get(path);
 		return set.size();
 	}

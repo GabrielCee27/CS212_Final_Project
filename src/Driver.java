@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.List;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,9 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Driver {
-	
-	private static WordIndex wordIndex = new WordIndex();
-	
 	
 	public static Path retrievePath(ArgumentMap argMap) {	
 		Path p = Paths.get(argMap.getString("-path"));
@@ -37,19 +33,14 @@ public class Driver {
 
 	public static File createIndexFile(Path indexPath) {
 		File indexFile = new File(indexPath.toString());
-		
-		if(indexFile.exists() && indexFile.delete()) {
-			System.out.println("Deleted exsistng file.");
-		} else {
 			
-			try {
-				indexFile.createNewFile();
+		try {
+			indexFile.createNewFile();
 				//System.out.println("Created a new index file.");
-			} catch (IOException e) {
+		} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} //else
+			e.printStackTrace();
+		}
 		
 		return indexFile;
 	}
@@ -62,7 +53,7 @@ public class Driver {
 	public static String readFile(File file) throws IOException {
 		try(
 				BufferedReader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8);
-				){
+		){
 			
 			String str = null;
 			String txt = "";
@@ -80,7 +71,7 @@ public class Driver {
 	}
 	
 	
-	public static void buildIndex(File file, String path) {
+	public static void buildIndex(WordIndex wordIndex, File file, String path) {
 		
 		String txt;
 		
@@ -90,12 +81,10 @@ public class Driver {
 			
 			txt = HTMLCleaner.stripHTML(txt);
 			
+			// Avoid empty files
 			if(!txt.equals("")) { 
-				// Avoid empty files
 				wordIndex.addAll(txt.split(" "), path);
 			}
-			
-			//System.out.println("wordIndex: \n" + wordIndex.toString());
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -103,8 +92,16 @@ public class Driver {
 		
 	}
 	
+	/*
+	 * IMPROVEMENTS: Make a json converter class and implement recursion.
+	 *  - Look into implementing the conversion inside WordIndex class -> wordIndex.toJsonString()
+	 *
+	 * 
+	 * FIX: Make wordIndex.copyWords() and .copyPaths() easier for conversion
+	 * 
+	 */
 	
-	public static String convertIndexToJSONstring() {
+	public static String convertIndexToJSONstring(WordIndex wordIndex) {
 		
 		String str = "{\n";
 		
@@ -173,13 +170,10 @@ public class Driver {
 			
 			writer.close();
 			
-			//System.out.println("Index File Created at " + file.toPath().toString());
-			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-				
 		
 	}
 	
@@ -193,11 +187,7 @@ public class Driver {
 		
 		//System.out.println("ext: " + ext);
 		
-		if(ext.equals("html") || ext.equals("htm")) {
-			return true;
-		}
-		
-		return false;
+		return (ext.equals("html") || ext.equals("htm"));
 	}
 	
 	
@@ -207,23 +197,16 @@ public class Driver {
 	 * 
 	 * 
 	 */
-	public static void recTraverse (File f) {
+	public static void recTraverse (WordIndex wordIndex, File f) {
 		
-		if(f.isFile()) {
+		if(f.isFile() && isHTMLorHTM(f)) {
 			
-			
-			//System.out.println("\nFile: " + f.toPath().toString());
-//			System.out.println(f.getName());
-			
-			if(isHTMLorHTM(f)) {
-				//System.out.println("Is an HTML file");
-				buildIndex(f, f.toPath().toString());
-			}
+			buildIndex(wordIndex, f, f.toPath().toString());
 				
 		} else if(f.isDirectory()) {
 			
 			for(File recF : f.listFiles()) {
-				recTraverse(recF);
+				recTraverse(wordIndex, recF);
 			}
 			
 		} else {
@@ -236,8 +219,8 @@ public class Driver {
 	public static void main(String[] args) {
 		
 		ArgumentMap argMap = new ArgumentMap(args);
-		//System.out.println("args: " + Arrays.toString(args));
-		//System.out.println("numFlags(): " + argMap.numFlags());
+		
+		WordIndex wordIndex = new WordIndex();
 		
 		Path p = null;
 		
@@ -247,8 +230,8 @@ public class Driver {
 			
 			File pFile = new File(p.normalize().toString());
 			
-			// populate wordIndex
-			recTraverse(pFile);
+			// Populate wordIndex
+			recTraverse(wordIndex, pFile);
 				
 		} else {
 			System.out.println("No path given.");
@@ -256,14 +239,13 @@ public class Driver {
 		
 		//Covert wordIndex TO JSON String
 		
-		String jsnStr = convertIndexToJSONstring();
-		//System.out.println("JSON String: \n" + jsnStr);
+		String jsnStr = convertIndexToJSONstring(wordIndex);
 
-		//Creating the index file
+		//Create the index file
 		
 		if(argMap.hasFlag("-index")) {
 		
-			Path indexPath = retrieveIndexPath(argMap); //FIX: Make argMap global?
+			Path indexPath = retrieveIndexPath(argMap);
 			File indexFile = createIndexFile(indexPath);
 			
 			writeToIndexFile(jsnStr, indexFile);
