@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -10,33 +12,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class Driver {
-	
-	public static Path retrievePath(ArgumentMap argMap) {	
-		Path p = Paths.get(argMap.getString("-path"));
-		p = p.toAbsolutePath().normalize();
-		
-		//FIX: Should check if path is valid?
-		
-		return p;
-	}
-	
-	
-	public static Path retrieveIndexPath(ArgumentMap argMap) {
-		
-		Path defaultPath = Paths.get(".", "index.json");
-		Path p = Paths.get(argMap.getString("-index", defaultPath.toString()));
-		
-		p = p.toAbsolutePath().normalize();
-		
-		return p;
-	}
 
 	public static File createIndexFile(Path indexPath) {
 		File indexFile = new File(indexPath.toString());
 			
 		try {
 			indexFile.createNewFile();
-				//System.out.println("Created a new index file.");
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -177,6 +158,16 @@ public class Driver {
 		
 	}
 	
+	/**
+	 * Indicates whether a file is an HTML or HTM file.
+	 *
+	 * @param f
+	 * 			File to check
+	 *            
+	 * @see File#getName()
+	 * @see String#lastIndexOf(int)
+	 * @see String#substring(int)
+	 */
 	public static boolean isHTMLorHTM(File f) {
 	
 		String name = f.getName();
@@ -191,11 +182,18 @@ public class Driver {
 	}
 	
 	
-	/* Recursively traverses through directory to find all files in any sub-directories.
-	 * Should be populating wordIndex
+	/**
+	 * Recursively traverses through current directory and any sub-directories 
+	 * passing valid files to buildIndex function.
+	 *
+	 * @param wordIndex
+	 *            WordIndex to populate.
+	 * @param f
+	 * 			File to traverse if a directory or pass to buildIndex if a 
+	 * 			valid file.
 	 * 
-	 * 
-	 * 
+	 * @see File#isFile()
+	 * @see File#isDirectory()
 	 */
 	public static void recTraverse (WordIndex wordIndex, File f) {
 		
@@ -212,7 +210,6 @@ public class Driver {
 		} else {
 			return;
 		}
-		
 	}
 	
 
@@ -222,15 +219,12 @@ public class Driver {
 		
 		WordIndex wordIndex = new WordIndex();
 		
-		Path p = null;
-		
 		if(argMap.hasFlag("-path") && argMap.hasValue("-path")) {
 			
-			p = Paths.get(argMap.getString("-path"));
+			Path p = Paths.get(argMap.getString("-path"));
 			
 			File pFile = new File(p.normalize().toString());
 			
-			// Populate wordIndex
 			recTraverse(wordIndex, pFile);
 				
 		} else {
@@ -241,11 +235,15 @@ public class Driver {
 		
 		String jsnStr = convertIndexToJSONstring(wordIndex);
 
-		//Create the index file
+		// Index file
 		
 		if(argMap.hasFlag("-index")) {
 		
-			Path indexPath = retrieveIndexPath(argMap);
+			Path defaultPath = Paths.get(".", "index.json");
+			Path indexPath = Paths.get(argMap.getString("-index", defaultPath.toString()));
+			
+			indexPath = indexPath.toAbsolutePath().normalize();
+			
 			File indexFile = createIndexFile(indexPath);
 			
 			writeToIndexFile(jsnStr, indexFile);
