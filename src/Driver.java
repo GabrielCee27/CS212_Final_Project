@@ -13,13 +13,22 @@ import java.io.IOException;
 
 public class Driver {
 
+	/**
+	 * Tries to create a new file for the given path.
+	 *
+	 * @param indexPath
+	 * 			Path to create file at
+	 *            
+	 * @see File#createNewFile()
+	 * 
+	 * @return new File that represents the indexFile
+	 */
 	public static File createIndexFile(Path indexPath) {
 		File indexFile = new File(indexPath.toString());
 			
 		try {
 			indexFile.createNewFile();
 		} catch (IOException e) {
-				// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -27,9 +36,17 @@ public class Driver {
 	}
 	
 	/**
-	 * Reads a file line by line. Returns a String representation of the file.
-	 * There should be no new-lines.
+	 * Reads a file line by line.
 	 * 
+	 * @param file
+	 * 			File to read
+	 * 
+	 * @throws IOException
+	 *            
+	 * @see Files#newBufferedReader(Path, java.nio.charset.Charset)
+	 * @see BufferedReader#readLine()
+	 * 
+	 * @return a String representation of the file
 	 */
 	public static String readFile(File file) throws IOException {
 		try(
@@ -52,7 +69,20 @@ public class Driver {
 	}
 	
 	
-	public static void buildIndex(WordIndex wordIndex, File file, String path) {
+	/**
+	 * Populates wordIndex.
+	 * 
+	 * @param wordIndex
+	 * 			WordIndex to populate
+	 * @param file
+	 * 			File to retrieve information from
+	 * @param path
+	 * 			String of a path of a
+	 *            
+	 * @see 
+	 * 
+	 */
+	public static void buildIndex(WordIndex wordIndex, File file) {
 		
 		String txt;
 		
@@ -64,7 +94,10 @@ public class Driver {
 			
 			// Avoid empty files
 			if(!txt.equals("")) { 
-				wordIndex.addAll(txt.split(" "), path);
+				
+				//String filePath = file.toPath().toString();
+				
+				wordIndex.addAll(txt.split(" "), file.toPath().toString());
 			}
 			
 		} catch (IOException e) {
@@ -199,7 +232,7 @@ public class Driver {
 		
 		if(f.isFile() && isHTMLorHTM(f)) {
 			
-			buildIndex(wordIndex, f, f.toPath().toString());
+			buildIndex(wordIndex, f);
 				
 		} else if(f.isDirectory()) {
 			
@@ -241,7 +274,6 @@ public class Driver {
 		
 			Path defaultPath = Paths.get(".", "index.json");
 			Path indexPath = Paths.get(argMap.getString("-index", defaultPath.toString()));
-			
 			indexPath = indexPath.toAbsolutePath().normalize();
 			
 			File indexFile = createIndexFile(indexPath);
