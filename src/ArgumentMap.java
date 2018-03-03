@@ -191,7 +191,7 @@ public class ArgumentMap {
 			return defaultValue;
 		}
 		
-		return value; // TODO
+		return value; 
 	}
 
 	@Override

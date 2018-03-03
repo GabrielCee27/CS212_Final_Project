@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -75,12 +73,11 @@ public class Driver {
 	 * @param wordIndex
 	 * 			WordIndex to populate
 	 * @param file
-	 * 			File to retrieve information from
-	 * @param path
-	 * 			String of a path of a
-	 *            
-	 * @see 
+	 * 			File used to populate wordIndex
 	 * 
+	 * @see Driver#readFile(File)       
+	 * @see HTMLCleaner#stripHTML(String)
+	 * @see WordIndex#addAll(String[], String)
 	 */
 	public static void buildIndex(WordIndex wordIndex, File file) {
 		
@@ -95,8 +92,6 @@ public class Driver {
 			// Avoid empty files
 			if(!txt.equals("")) { 
 				
-				//String filePath = file.toPath().toString();
-				
 				wordIndex.addAll(txt.split(" "), file.toPath().toString());
 			}
 			
@@ -106,14 +101,6 @@ public class Driver {
 		
 	}
 	
-	/*
-	 * IMPROVEMENTS: Make a json converter class and implement recursion.
-	 *  - Look into implementing the conversion inside WordIndex class -> wordIndex.toJsonString()
-	 *
-	 * 
-	 * FIX: Make wordIndex.copyWords() and .copyPaths() easier for conversion
-	 * 
-	 */
 	
 	public static String convertIndexToJSONstring(WordIndex wordIndex) {
 		
@@ -175,6 +162,16 @@ public class Driver {
 	}
 	
 	
+	/**
+	 * Writes string to given file.
+	 * 
+	 * @param str
+	 * 			String to write to file
+	 * @param file
+	 * 			File to be written
+	 * 
+	 * @see BufferedWriter#write(String)
+	 */
 	public static void writeToIndexFile(String str, File file) {
 		
 		try {
@@ -185,10 +182,8 @@ public class Driver {
 			writer.close();
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 	
 	/**
@@ -197,7 +192,6 @@ public class Driver {
 	 * @param f
 	 * 			File to check
 	 *            
-	 * @see File#getName()
 	 * @see String#lastIndexOf(int)
 	 * @see String#substring(int)
 	 */

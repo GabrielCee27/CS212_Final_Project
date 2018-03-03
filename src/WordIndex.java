@@ -30,6 +30,8 @@ public class WordIndex {
 	 *
 	 * @param word
 	 *            word to clean and add to index
+	 * @ path
+	 * 			  String of where in the directory a word was found
 	 * @param position
 	 *            position word was found
 	 */
@@ -101,12 +103,10 @@ public class WordIndex {
 
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
-	 * at position 1.
+	 * at position 0.
 	 *
 	 * @param words
 	 *            array of words to add
-	 *
-	 * @see #addAll(String[], int)
 	 */
 	public void addAll(String[] words, String path) {
 		for(int i = 0; i < words.length; i++) {	
@@ -121,6 +121,8 @@ public class WordIndex {
 	 *
 	 * @param word
 	 *            word to look for
+	 * @param path
+	 * 			  String of path to look for
 	 * @return number of times the word was found
 	 */
 	public int count(String word, String path) {

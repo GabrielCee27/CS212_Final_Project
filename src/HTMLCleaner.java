@@ -97,6 +97,13 @@ public class HTMLCleaner {
 		
 	}
 
+	/**
+	 * Replaces all numbers with a single space.
+	 *
+	 * @param html
+	 *            text including numbers to remove
+	 * @return text without any numbers
+	 */
 	public static String stripNumbers(String txt) {
 		
 		String regex = String.format("\\d");
@@ -121,7 +128,14 @@ public class HTMLCleaner {
 		return m.replaceAll(" ");
 	}
 
-public static String stripPunctuations(String txt) {
+	/**
+	 * Replaces all punctuations with a single space.
+	 *
+	 * @param html
+	 *            text including punctuations to remove
+	 * @return text without any punctuations
+	 */
+	public static String stripPunctuations(String txt) {
 		
 		String regex = String.format("(?![a-zA-ZÀ-ÿ])[\\W\\_]");
 	
@@ -131,7 +145,14 @@ public static String stripPunctuations(String txt) {
 		return m.replaceAll(" ");
 	}
 
-public static String cleanLines(String txt) {
+	/**
+	 * Replaces all spaces of two or more with one single space.
+	 *
+	 * @param html
+	 *            text including spaces to remove
+	 * @return text separated by a single space
+	 */
+	public static String cleanLines(String txt) {
 		
 		String regex = String.format("\\s{2,}");
 		
