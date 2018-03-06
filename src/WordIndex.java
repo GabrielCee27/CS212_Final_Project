@@ -30,7 +30,7 @@ public class WordIndex {
 	 *
 	 * @param word
 	 *            word to clean and add to index
-	 * @ path
+	 * @param path
 	 * 			  String of where in the directory a word was found
 	 * @param position
 	 *            position word was found
@@ -107,6 +107,8 @@ public class WordIndex {
 	 *
 	 * @param words
 	 *            array of words to add
+	 *            
+	 * @see WordIndex#add(String, String, int)
 	 */
 	public void addAll(String[] words, String path) {
 		for(int i = 0; i < words.length; i++) {	
@@ -123,6 +125,7 @@ public class WordIndex {
 	 *            word to look for
 	 * @param path
 	 * 			  String of path to look for
+	 * 
 	 * @return number of times the word was found
 	 */
 	public int count(String word, String path) {
@@ -175,16 +178,19 @@ public class WordIndex {
 		
 		list.addAll(idx.keySet());
 		
-		Collections.sort(list);
+		//Collections.sort(list);
 		
 		return list;
 	}
 
 	/**
-	 * Returns a copy of the positions for a specific word.
+	 * Returns a copy of the positions for a specific word and path.
 	 *
 	 * @param word
 	 *            to find in index
+	 * @param path
+	 * 			  to find in index
+	 * 
 	 * @return sorted list of positions for that word
 	 *
 	 * @see ArrayList#ArrayList(java.util.Collection)
@@ -205,13 +211,23 @@ public class WordIndex {
 		return list;
 	}
 	
+	/**
+	 * Returns a copy of the paths for a specific word.
+	 *
+	 * @param word
+	 *            to find in index
+	 * @return sorted list of paths for that word
+	 *
+	 * @see ArrayList#ArrayList(java.util.Collection)
+	 * @see Collections#sort(List)
+	 */
 	public List<String> copyPaths(String word){
 		
 		List <String> list = new ArrayList<>();
 		
 		list.addAll(idx.get(word).keySet());
 		
-		Collections.sort(list);
+		//Collections.sort(list);
 		
 		return list;
 	}

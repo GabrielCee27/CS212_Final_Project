@@ -38,8 +38,10 @@ public class ArgumentMap {
 		for(int i=0; i < args.length; i++) {
 			
 			if(isFlag(args[i])) {
+				
 				//System.out.println("flag");
 				
+				// check if there is a value
 				if( (i+1 < args.length) && isValue(args[i+1]) )  {
 					
 					map.put(args[i], args[i+1]);
@@ -49,7 +51,6 @@ public class ArgumentMap {
 					System.out.println("No value");
 					
 					if(hasFlag(args[i])) {
-						//replace?
 						map.replace(args[i], null);
 					} else {
 						map.put(args[i], null);
@@ -64,9 +65,11 @@ public class ArgumentMap {
 	}
 
 	/**
-	 *
+	 * Indicates if an arg is a flag
+	 * 
 	 * @param arg
-	 * @return
+	 * 
+	 * @return boolean
 	 */
 	public static boolean isFlag(String arg) {
 		//valid flags: "-path" or "-index"
@@ -81,9 +84,11 @@ public class ArgumentMap {
 	}
 
 	/**
+	 * Indicates if a arg is a value
 	 *
 	 * @param arg
-	 * @return
+	 * 
+	 * @return boolean
 	 */
 	public static boolean isValue(String arg) {
 		
@@ -165,7 +170,7 @@ public class ArgumentMap {
 			return getString(flag);
 		}
 		
-		return defaultValue; // TODO
+		return defaultValue;
 	}
 
 	/**

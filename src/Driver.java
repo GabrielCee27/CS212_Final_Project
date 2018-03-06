@@ -57,9 +57,8 @@ public class Driver {
 			while((str = reader.readLine()) != null) {
 				
 				// Put a space b/w two words originally separated by a new-line
-				txt += " ";
+				txt += (" " + str);
 				
-				txt += str;
 			}
 			
 			return txt;
@@ -101,90 +100,6 @@ public class Driver {
 		
 	}
 	
-	
-	public static String convertIndexToJSONstring(WordIndex wordIndex) {
-		
-		String str = "{\n";
-		
-		List <String> words = wordIndex.copyWords();
-		
-		for(int i=0; i < words.size(); i++) {
-			
-			str += "\t";
-			
-			str += String.format("\"%s\"", words.toArray()[i]) + ": {\n";
-			
-			List <String> paths = wordIndex.copyPaths(words.toArray()[i].toString());
-			
-			for(int j=0; j < paths.size(); j++) {
-				
-				str += "\t\t";
-				
-				str += String.format("\"%s\"", paths.toArray()[j]) + ": [\n";
-				
-				List <Integer> positions = wordIndex.copyPositions(words.toArray()[i].toString(), paths.toArray()[j].toString());
-				
-				for(int k = 0; k < positions.size(); k++) {
-					
-					str += "\t\t\t";
-					
-					str += positions.toArray()[k].toString();
-						
-					if(k != positions.size()-1) {
-						str += ",";
-					}
-						
-					str += "\n";
-				}
-				
-				str += "\t\t]";
-				
-				if(j != paths.size()-1) {
-					str += ",";
-				}
-				
-				str += "\n";
-				
-			}
-			
-			str += "\t}";
-			
-			if(i != words.size()-1) {
-				str += ",";
-			}
-			
-			str += "\n";
-		}
-		
-		str += "}";
-
-		return str;
-	}
-	
-	
-	/**
-	 * Writes string to given file.
-	 * 
-	 * @param str
-	 * 			String to write to file
-	 * @param file
-	 * 			File to be written
-	 * 
-	 * @see BufferedWriter#write(String)
-	 */
-	public static void writeToIndexFile(String str, File file) {
-		
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			
-			writer.write(str);
-			
-			writer.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	/**
 	 * Indicates whether a file is an HTML or HTM file.
@@ -250,29 +165,22 @@ public class Driver {
 			
 			Path p = Paths.get(argMap.getString("-path"));
 			
-			File pFile = new File(p.normalize().toString());
+			File file = new File(p.normalize().toString());
 			
-			recTraverse(wordIndex, pFile);
+			recTraverse(wordIndex, file);
 				
 		} else {
 			System.out.println("No path given.");
 		}
-		
-		//Covert wordIndex TO JSON String
-		
-		String jsnStr = convertIndexToJSONstring(wordIndex);
 
-		// Index file
 		
 		if(argMap.hasFlag("-index")) {
 		
-			Path defaultPath = Paths.get(".", "index.json");
-			Path indexPath = Paths.get(argMap.getString("-index", defaultPath.toString()));
+			String defaultPath = Paths.get(".", "index.json").toString();
+			Path indexPath = Paths.get(argMap.getString("-index", defaultPath));
 			indexPath = indexPath.toAbsolutePath().normalize();
-			
-			File indexFile = createIndexFile(indexPath);
-			
-			writeToIndexFile(jsnStr, indexFile);
+				
+			JSONWriter.asWordIndex(wordIndex, indexPath);
 			
 		} else {
 			System.out.println("No index file created.");
