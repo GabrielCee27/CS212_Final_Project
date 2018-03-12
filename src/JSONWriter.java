@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/**
+ * Converts data structures into "pretty" JSON format.
+ */
 public class JSONWriter {
 
 	/**

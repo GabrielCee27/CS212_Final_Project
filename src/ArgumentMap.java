@@ -1,6 +1,10 @@
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * Recognizes flags and values and puts them into a Map.
+ */
 public class ArgumentMap {
 
 	private final Map<String, String> map;
