@@ -23,6 +23,7 @@ public class Driver {
 	 * @return new File that represents the indexFile
 	 */
 	public static File createIndexFile(Path indexPath) {
+		
 		File indexFile = new File(indexPath.toString());
 			
 		try {
@@ -181,7 +182,11 @@ public class Driver {
 			Path indexPath = Paths.get(argMap.getString("-index", defaultPath));
 			indexPath = indexPath.toAbsolutePath().normalize();
 				
-			JSONWriter.asWordIndex(wordIndex, indexPath);
+			try {
+				JSONWriter.asWordIndex(wordIndex, indexPath);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
 		} else {
 			System.out.println("No index file created.");

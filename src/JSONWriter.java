@@ -227,14 +227,14 @@ public class JSONWriter {
 	 *            WordIndex to write as a JSON object with a nested array
 	 * @param path
 	 *            path to write file
+	 * @throws IOException 
 	 */
-	public static void asWordIndex(WordIndex wordIndex, Path p) {
+	public static void asWordIndex(WordIndex wordIndex, Path p) throws IOException {
 		
-		try {
-			
-			BufferedWriter writer = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
-			
-			writer.write("{\n");
+		try(
+				BufferedWriter writer = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
+				){
+writer.write("{\n");
 			
 			List <String> words = wordIndex.copyWords();
 			
@@ -297,11 +297,8 @@ public class JSONWriter {
 			
 			
 			writer.write("}");
-			writer.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		
 	}
 	
 	
