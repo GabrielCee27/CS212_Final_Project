@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -22,7 +24,9 @@ public class WordIndex {
 	 * Initializes the index.
 	 */
 	public WordIndex() {
-		idx = new TreeMap<>();
+		//idx = new TreeMap<>();
+		
+		idx = new HashMap<>();
 	}
 
 	/**
@@ -71,7 +75,8 @@ public class WordIndex {
 				
 				//create a new pathMap
 				
-				Map<String, Set<Integer>> pathMap = new TreeMap<>();
+//				Map<String, Set<Integer>> pathMap = new TreeMap<>();
+				Map<String, Set<Integer>> pathMap = new HashMap<>();
 				
 				Set <Integer> set = new HashSet<>();
 				
@@ -91,7 +96,10 @@ public class WordIndex {
 			Set <Integer> set = new HashSet<>();
 			set.add(position); //adds to set if not already present
 			
-			Map<String, Set<Integer>> pathMap = new TreeMap<>();
+			
+//			Map<String, Set<Integer>> pathMap = new TreeMap<>();
+			Map<String, Set<Integer>> pathMap = new HashMap<>();
+			
 			pathMap.put(path, set);
 			
 			idx.put(word, pathMap);
@@ -177,7 +185,7 @@ public class WordIndex {
 		
 		list.addAll(idx.keySet());
 		
-		//Collections.sort(list);
+		Collections.sort(list);
 		
 		return list;
 	}
@@ -226,10 +234,15 @@ public class WordIndex {
 		
 		list.addAll(idx.get(word).keySet());
 		
+		Collections.sort(list);
+		
 		return list;
 	}
 	
-
+	public Set<Entry<String, Map<String, Set<Integer>>>> wordsEntrySet() {
+		return idx.entrySet();
+	}
+	
 	/**
 	 * Returns a string representation of this index.
 	 */

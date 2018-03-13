@@ -184,6 +184,7 @@ public class Driver {
 				
 			try {
 				JSONWriter.asWordIndex(wordIndex, indexPath);
+				//JSONWriter.asWordIndexAlt(wordIndex, indexPath);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

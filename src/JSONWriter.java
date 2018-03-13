@@ -5,7 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -201,10 +205,8 @@ public class JSONWriter {
 				
 				writer.write(quote(key) + ": ");
 				
-				 
 				 asArray(writer, set, 2);
 				 
-
 				 if(key != elements.lastKey()) { 
 					 writer.append(',');
 				 }
@@ -243,19 +245,24 @@ public class JSONWriter {
 				
 				writer.write(indent(1));
 				
-				writer.write(quote(words.toArray()[i].toString()));
+				//writer.write(quote(words.toArray()[i].toString()));
+				writer.write(quote(words.get(i).toString()));
 				
 				writer.write(": {\n");
 				
-				List <String> paths = wordIndex.copyPaths(words.toArray()[i].toString());
+				//List <String> paths = wordIndex.copyPaths(words.toArray()[i].toString());
+				
+				List <String> paths = wordIndex.copyPaths(words.get(i));
 				
 				for(int j=0; j < paths.size(); j++) {
 					
 					writer.write(indent(2));
 					
-					writer.write(quote(paths.toArray()[j].toString()));
+					//writer.write(quote(paths.toArray()[j].toString()));
+					writer.write(quote(paths.get(j)));
 					
-					List <Integer> positions = wordIndex.copyPositions(words.toArray()[i].toString(), paths.toArray()[j].toString());
+//					List <Integer> positions = wordIndex.copyPositions(words.toArray()[i].toString(), paths.toArray()[j].toString());
+					List <Integer> positions = wordIndex.copyPositions(words.get(i), paths.get(j));
 					
 					//array
 //					writer.write(":");
@@ -267,7 +274,8 @@ public class JSONWriter {
 						
 						writer.write(indent(3));
 						
-						writer.write(positions.toArray()[k].toString());
+//						writer.write(positions.toArray()[k].toString());
+						writer.write(positions.get(k).toString());
 							
 						if(k != positions.size()-1) {
 							writer.write(",");
@@ -301,6 +309,6 @@ public class JSONWriter {
 		}
 		
 	}
-	
+
 	
 }
