@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Data structure to store strings and their positions.
+ * Data structure to store words and their positions.
  */
 public class WordIndex {
 
@@ -37,7 +37,6 @@ public class WordIndex {
 	 */
 	public void add(String word, String path, int position) {
 
-		
 		if(idx.containsKey(word)) {
 			//already has key
 			
@@ -226,8 +225,6 @@ public class WordIndex {
 		List <String> list = new ArrayList<>();
 		
 		list.addAll(idx.get(word).keySet());
-		
-		//Collections.sort(list);
 		
 		return list;
 	}

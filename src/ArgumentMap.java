@@ -2,8 +2,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 /**
- * Recognizes flags and values and puts them into a Map.
+ * Recognizes flags and values and puts it into a Map.
  */
 public class ArgumentMap {
 

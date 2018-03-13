@@ -234,7 +234,8 @@ public class JSONWriter {
 		try(
 				BufferedWriter writer = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
 				){
-writer.write("{\n");
+			
+			writer.write("{\n");
 			
 			List <String> words = wordIndex.copyWords();
 			
