@@ -53,7 +53,7 @@ public class ArgumentMap {
 					i = i+1;
 					
 				} else { //if not a value or no value found
-					System.out.println("No value");
+					//System.out.println("No value");
 					
 					if(hasFlag(args[i])) {
 						map.replace(args[i], null);
@@ -81,7 +81,8 @@ public class ArgumentMap {
 		
 		arg.trim();
 		
-		if(arg.equalsIgnoreCase("-index") || arg.equalsIgnoreCase("-path") || arg.equalsIgnoreCase("-url") || arg.equalsIgnoreCase("-query")) {
+		if(arg.equalsIgnoreCase("-index") || arg.equalsIgnoreCase("-path") || arg.equalsIgnoreCase("-url") 
+				|| arg.equalsIgnoreCase("-query") || arg.equalsIgnoreCase("-exact") || arg.equalsIgnoreCase("-results")) {
 			return true;
 		}
 		
