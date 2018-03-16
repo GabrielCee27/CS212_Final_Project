@@ -81,7 +81,7 @@ public class ArgumentMap {
 		
 		arg.trim();
 		
-		if(arg.equalsIgnoreCase("-index") || arg.equalsIgnoreCase("-path") || arg.equalsIgnoreCase("-url")) {
+		if(arg.equalsIgnoreCase("-index") || arg.equalsIgnoreCase("-path") || arg.equalsIgnoreCase("-url") || arg.equalsIgnoreCase("-query")) {
 			return true;
 		}
 		
