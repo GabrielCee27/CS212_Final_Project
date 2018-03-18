@@ -251,4 +251,44 @@ public class WordIndex {
 		return idx.toString();
 	}
 	
+	/**
+	 * Matches any word from the inverted index that exactly matches the query word.
+	 * 
+	 * @param
+	 * 		parsed words from a single query
+	 * @return
+	 * 		a sorted list of search results
+	 */
+	public HashSet exactSearch(String query) {
+		
+		//Change to List?
+		HashSet <Word> results = new HashSet<>();
+		
+		if(idx.containsKey(query)) {
+				
+			//Create a Word for each path if frequency is > 0
+			for(String p : copyPaths(query)) {
+				
+				List<Integer> positions = copyPositions(query, p);
+				
+				if(positions.size() > 0) {
+					
+					int frequency = positions.size();
+					//Assuming the list is already sorted
+					int initPosition = positions.get(0);
+					
+					Word word = new Word(p, frequency, initPosition);
+					System.out.println(query + ": " + word.toString());
+					
+					results.add(word);
+					
+				}
+					
+			}
+		}
+		
+		return results;
+	}
+	
+	
 }
