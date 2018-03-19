@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class QueryHelper {
 	
 	/** Can change inner HashSet to List if able to remove duplicates from queries */
-	private Map<String, HashSet<Word>> queriesResults;
+	public Map<String, HashSet<Word>> queriesResults;
 	
 	private Boolean exactSearch;
 	
@@ -145,17 +145,7 @@ public class QueryHelper {
 	
 		list.addAll(queriesResults.get(query));
 		
-		//TODO: Send to Word to be sorted in natural order
-		
 		return list;
 	}
-	
-	public void writeToFile(Path path) throws IOException {
-		
-		JSONWriter.asQueriesResults(this.queriesResults, path);
-		
-	}
-	
-	
 	
 }

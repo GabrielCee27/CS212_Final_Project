@@ -244,10 +244,9 @@ public class Driver {
 			resultsPath = resultsPath.toAbsolutePath().normalize();
 			
 			try {
-				//TODO: Write query results to file
 				
-				queryHelper.writeToFile(resultsPath);
-				
+				JSONWriter.asQueriesResults(queryHelper, resultsPath);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

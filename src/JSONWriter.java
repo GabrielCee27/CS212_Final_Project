@@ -327,9 +327,8 @@ public class JSONWriter {
 		
 		writer.write(indent(level) + "}");
 	}
-
 	
-	public static void asQueriesResults(Map<String, HashSet<Word>> queriesResults, Path path) throws IOException {
+	public static void asQueriesResults(QueryHelper queriesResults, Path path) throws IOException {
 		
 		try(
 				BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
@@ -337,7 +336,7 @@ public class JSONWriter {
 			
 			writer.write("[\n");
 			
-			TreeSet<String> queriesTreeSet = new TreeSet<>(queriesResults.keySet());
+			TreeSet<String> queriesTreeSet = new TreeSet<>(queriesResults.copyQueries());
 			
 			for(String query : queriesTreeSet) {
 				
@@ -347,7 +346,7 @@ public class JSONWriter {
 		
 				writer.write(indent(2) + "\"results\": " + "[\n");
 				
-				List<Word> resultsList = Word.listByNaturalOrder(queriesResults.get(query));
+				List<Word> resultsList = Word.listByNaturalOrder(queriesResults.copyResults(query));
 				
 				for(int i = 0; i< resultsList.size(); i++) {
 						
@@ -372,6 +371,7 @@ public class JSONWriter {
 			
 			writer.write("]");
 		}
+		
 	}
 	
 }
