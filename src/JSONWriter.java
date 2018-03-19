@@ -4,12 +4,17 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+
+import javax.print.attribute.SetOfIntegerSyntax;
+
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -309,6 +314,64 @@ public class JSONWriter {
 		}
 		
 	}
+	
+	public static void asWord(Writer writer, Word word, int level) throws IOException {
+		
+		writer.write(indent(level) + "{\n");
+		
+		writer.write(indent(level + 1) + "\"where\": " + quote(word.path) + ",\n");
+		
+		writer.write(indent(level + 1) + "\"count\": " + word.frequency + ",\n");
+		
+		writer.write(indent(level + 1) + "\"index\": " + word.position + "\n");
+		
+		writer.write(indent(level) + "}");
+	}
 
+	
+	public static void asQueriesResults(Map<String, HashSet<Word>> queriesResults, Path path) throws IOException {
+		
+		try(
+				BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+				) {
+			
+			writer.write("[\n");
+			
+			TreeSet<String> queriesTreeSet = new TreeSet<>(queriesResults.keySet());
+			
+			for(String query : queriesTreeSet) {
+				
+				writer.write(indent(1) + "{\n");
+				
+				writer.write(indent(2) + "\"queries\": " + quote(query) + ",\n");
+		
+				writer.write(indent(2) + "\"results\": " + "[\n");
+				
+				List<Word> resultsList = Word.listByNaturalOrder(queriesResults.get(query));
+				
+				for(int i = 0; i< resultsList.size(); i++) {
+						
+					asWord(writer, resultsList.get(i), 3);
+					
+					if(i != (resultsList.size() - 1))
+						writer.write(",");
+				
+					writer.newLine();
+					
+				}
+				
+				writer.write(indent(2) + "]\n");
+				
+				writer.write(indent(1) + "}");
+				
+				if(!query.equals(queriesTreeSet.last()))
+					writer.write(",");
+				
+				writer.write("\n");
+			}
+			
+			writer.write("]");
+		}
+	}
 	
 }

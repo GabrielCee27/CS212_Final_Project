@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -285,9 +286,128 @@ public class WordIndex {
 				}
 					
 			}
+		} else {
+			System.out.println("Exact word not found in wordIndex.");
 		}
 		
 		return results;
+	}
+	
+	public List<Word> exactSearch(List<String> queries) {
+		
+		//Start with map with paths as the key
+		HashMap<String, Word> resultsMap = new HashMap<>();
+		
+		for(String query : queries) {
+			
+			System.out.println("Exact search for: " + query);
+			
+			if(idx.containsKey(query)) { //exact search
+				
+				//Create a Word for each path if frequency is > 0
+				for(String p : copyPaths(query)) {
+					
+					List<Integer> positions = copyPositions(query, p);
+					
+					if(positions.size() > 0) {
+						
+						int frequency = positions.size();
+						//Assuming the list is already sorted
+						int initPosition = positions.get(0);
+						
+						//Check if path is already present in map
+						if(resultsMap.containsKey(p)) {
+							//update existing Word
+							
+							Word existingWord = resultsMap.get(p);
+							
+							//+= frequency
+							existingWord.addToFrequency(frequency);
+							
+							//updates position if less than current one
+							existingWord.updatePosition(initPosition);
+							
+							//place back into map?
+							
+						} else {
+							
+							Word newWord = new Word(p, frequency, initPosition);
+							resultsMap.put(p, newWord);
+						}
+						
+					}
+						
+				}
+			} else {
+				System.out.println("Exact word not found in wordIndex.");
+			}
+			
+		}
+		
+		List<Word> list = new ArrayList<>(resultsMap.values());
+		
+		return list;
+	
+	}
+	
+	/** Finds any word in index that STARTS with a query word */
+	public List<Word> partialSearch(List<String> queries){
+		
+		List<String> words = copyWords();
+		HashMap<String, Word> resultsMap = new HashMap<>();
+		
+		for(String query : queries) {
+			
+			for(String w : words) {
+				
+				/** Checks if query is at the front */
+				if(w.indexOf(query) == 0) {
+					//System.out.println("Found " + query + " in " + w);
+					
+					//Create a Word for each path if frequency is > 0
+					for(String p : copyPaths(w)) {
+						
+						List<Integer> positions = copyPositions(w, p);
+						
+						if(positions.size() > 0) {
+							
+							int frequency = positions.size();
+							
+							/** Assuming the list is already sorted */
+							int initPosition = positions.get(0);
+							
+							//Check if path is already present in map
+							if(resultsMap.containsKey(p)) {
+								//update existing Word
+								
+								Word existingWord = resultsMap.get(p);
+								
+								//+= frequency
+								existingWord.addToFrequency(frequency);
+								
+								//updates position if less than current one
+								existingWord.updatePosition(initPosition);
+								
+								//place back into map?
+								
+							} else {
+								
+								Word newWord = new Word(p, frequency, initPosition);
+								resultsMap.put(p, newWord);
+							}
+							
+						}
+							
+					}
+					
+				}
+			}
+			
+		}
+		
+		List<Word> list = new ArrayList<>(resultsMap.values());
+		
+		return list;
 	}
 	
 	

@@ -68,6 +68,28 @@ public class Driver {
 	}
 	
 	
+	public static void readFile(Path queryPath) throws IOException {
+		try(
+				BufferedReader reader = Files.newBufferedReader(queryPath, StandardCharsets.UTF_8);
+				){
+			
+			String str = null;
+			String txt = "";
+			
+			while((str = reader.readLine()) != null) {
+				
+				// Put a space b/w two words originally separated by a new-line
+				txt += (" " + str);
+				
+			}
+			
+			//return txt;
+			
+			System.out.println("txt: " + txt);
+			
+		}
+	}
+
 	/**
 	 * Populates wordIndex.
 	 * 
@@ -156,12 +178,14 @@ public class Driver {
 		}
 	}
 	
-
+	//FIX: Don't create files if passing to readFile
 	public static void main(String[] args) {
 		
 		ArgumentMap argMap = new ArgumentMap(args);
 		
 		WordIndex wordIndex = new WordIndex();
+		
+		QueryHelper queryHelper = new QueryHelper();
 		
 		if(argMap.hasFlag("-path") && argMap.hasValue("-path")) { 
 			
@@ -184,13 +208,49 @@ public class Driver {
 				
 			try {
 				JSONWriter.asWordIndex(wordIndex, indexPath);
-				//JSONWriter.asWordIndexAlt(wordIndex, indexPath);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 		} else {
-			System.out.println("No index file created.");
+			System.out.println("No index path given.");
+		}
+		
+		if(argMap.hasFlag("-query") && argMap.hasValue("-query")) {
+			
+			Path queryPath = Paths.get(argMap.getString("-query"));
+			
+			/** Because search is being called inside the queryHelper */
+			if(argMap.hasFlag("-exact")) {
+				queryHelper.exactSearchOn();
+			}
+			
+			try {
+				queryHelper.parseAndSearchFile(queryPath, wordIndex);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			
+		} else {
+			System.out.println("No query path given.");
+		}
+		
+		
+		if(argMap.hasFlag("-results")) {
+			
+			String resultsDefaultPathStr = Paths.get(".", "results.json").toString();
+			Path resultsPath = Paths.get(argMap.getString("-results", resultsDefaultPathStr));
+			resultsPath = resultsPath.toAbsolutePath().normalize();
+			
+			try {
+				//TODO: Write query results to file
+				
+				queryHelper.writeToFile(resultsPath);
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	} // main
