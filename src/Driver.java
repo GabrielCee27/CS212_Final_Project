@@ -178,7 +178,6 @@ public class Driver {
 		}
 	}
 	
-	//FIX: Don't create files if passing to readFile
 	public static void main(String[] args) {
 		
 		ArgumentMap argMap = new ArgumentMap(args);
@@ -218,19 +217,17 @@ public class Driver {
 		
 		if(argMap.hasFlag("-query") && argMap.hasValue("-query")) {
 			
-			Path queryPath = Paths.get(argMap.getString("-query"));
+			Path queryFilePath = Paths.get(argMap.getString("-query"));
 			
 			/** Because search is being called inside the queryHelper */
-			if(argMap.hasFlag("-exact")) {
+			if(argMap.hasFlag("-exact"))
 				queryHelper.exactSearchOn();
-			}
 			
 			try {
-				queryHelper.parseAndSearchFile(queryPath, wordIndex);
+				queryHelper.parseAndSearchFile(queryFilePath, wordIndex);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 			
 		} else {
 			System.out.println("No query path given.");

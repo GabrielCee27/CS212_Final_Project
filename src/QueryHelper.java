@@ -3,22 +3,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.io.File;
-import java.util.ArrayList;
 
 
 public class QueryHelper {
 	
-	/** Can change inner HashSet to List if able to remove duplicates from queries */
 	public Map<String, HashSet<Word>> queriesResults;
 	
 	private Boolean exactSearch;
@@ -42,80 +37,56 @@ public class QueryHelper {
 		try(
 				BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
 		){
-			
 			String str = null;
-			
-			//System.out.println("QueryHelper.parseFile:");
 			
 			while((str = reader.readLine()) != null) {
 				
-				System.out.println("Original query: " + str);
+				//System.out.println("Original query: " + str);
 				
-				//Remove special characters
 				String cleanedTxt = cleanTxt(str);
 				
-				//Sort words in query
-				List <String> queriesList = Arrays.asList(cleanedTxt.split(" "));
-				Collections.sort(queriesList);
-				
-				//System.out.println(queriesList.toString());
-				
-				String queriesStr = String.join(" ", queriesList);
-			
-				if(!queriesStr.isEmpty())
-					search(String.join(" ", queriesList), wordIndex);
-				
+				if(!cleanedTxt.isEmpty()) {
+					String sortedQueries = sortQueries(cleanedTxt);
+					if(!queriesResults.containsKey(sortedQueries))
+						search(sortedQueries, wordIndex);
+				}	
+					
 			}
 			
 		}
 		
 	}
 	
-	/** Use appropriate search from WordIndex and save results */
-	/** FIX: Don't search for empty strings */
-	/** Why is an empy string being found in word index? */
-	private void search(String queriesStr, WordIndex wordIndex){
+	public String sortQueries(String str) {
+		
+		String[] strArr = str.split(" ");
+		
+		Arrays.sort(strArr);
+		
+		return String.join(" ", strArr);
+	}
 	
-		//String queriesStr = String.join(" ", queriesList);
+	/** Use appropriate search from WordIndex and save results */
+	private void search(String queriesStr, WordIndex wordIndex){
 		
 		System.out.println("query: " + queriesStr);
+			
+		List<String> queriesList = Arrays.asList(queriesStr.split(" "));
 		
-		if(!queriesResults.containsKey(queriesStr)) {
+		HashSet<Word> resultsHashSet = new HashSet<>();
 			
-			List<String> queriesList = Arrays.asList(queriesStr.split(" "));
-			
-			//populate queriesResults
-			if(exactSearch) {
+		if(exactSearch)	
+			resultsHashSet.addAll(wordIndex.exactSearch(queriesList));
 				
-				//HashSet<Word> resultsHashSet = (HashSet<Word>) wordIndex.exactSearch(queriesList);
-				
-				//TODO:
-				
-				HashSet<Word> resultsHashSet= new HashSet<>(wordIndex.exactSearch(queriesList));
-				
-				queriesResults.put(queriesStr, resultsHashSet);
-				
-				//System.out.println("queriesResults: " + queriesResults.toString());
-				
-			} else {
-				//TODO: perform partial search
-				
-				HashSet<Word> resultsHashSet= new HashSet<>(wordIndex.partialSearch(queriesList));
-				queriesResults.put(queriesStr, resultsHashSet);
-				
-			}
-			
-			//TODO: add to quereiesResults?
-			
-		} else {
-			System.out.println("Already searched this query.");
-		}
-		
+		else	
+			resultsHashSet.addAll(wordIndex.partialSearch(queriesList));
+
+
+		queriesResults.put(queriesStr, resultsHashSet);
 	}
 
 	
 	private String cleanTxt(String str) {
-		
 		String txt = HTMLCleaner.stripPunctuations(str);
 		txt = HTMLCleaner.stripNumbers(txt);
 		txt = HTMLCleaner.cleanLines(txt);

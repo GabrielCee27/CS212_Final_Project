@@ -255,103 +255,27 @@ public class WordIndex {
 	/**
 	 * Matches any word from the inverted index that exactly matches the query word.
 	 * 
-	 * @param
-	 * 		parsed words from a single query
+	 * @param queries
+	 * 		parsed words alphabetically ordered from a single line
 	 * @return
 	 * 		a sorted list of search results
 	 */
-	public HashSet exactSearch(String query) {
+	public Collection<Word> exactSearch(List<String> queries) {
 		
-		//Change to List?
-		HashSet <Word> results = new HashSet<>();
-		
-		if(idx.containsKey(query)) {
-				
-			//Create a Word for each path if frequency is > 0
-			for(String p : copyPaths(query)) {
-				
-				List<Integer> positions = copyPositions(query, p);
-				
-				if(positions.size() > 0) {
-					
-					int frequency = positions.size();
-					//Assuming the list is already sorted
-					int initPosition = positions.get(0);
-					
-					Word word = new Word(p, frequency, initPosition);
-					System.out.println(query + ": " + word.toString());
-					
-					results.add(word);
-					
-				}
-					
-			}
-		} else {
-			System.out.println("Exact word not found in wordIndex.");
-		}
-		
-		return results;
-	}
-	
-	public List<Word> exactSearch(List<String> queries) {
-		
-		//Start with map with paths as the key
 		HashMap<String, Word> resultsMap = new HashMap<>();
 		
 		for(String query : queries) {
 			
-			System.out.println("Exact search for: " + query);
-			
-			if(idx.containsKey(query)) { //exact search
-				
-				//Create a Word for each path if frequency is > 0
-				for(String p : copyPaths(query)) {
-					
-					List<Integer> positions = copyPositions(query, p);
-					
-					if(positions.size() > 0) {
-						
-						int frequency = positions.size();
-						//Assuming the list is already sorted
-						int initPosition = positions.get(0);
-						
-						//Check if path is already present in map
-						if(resultsMap.containsKey(p)) {
-							//update existing Word
-							
-							Word existingWord = resultsMap.get(p);
-							
-							//+= frequency
-							existingWord.addToFrequency(frequency);
-							
-							//updates position if less than current one
-							existingWord.updatePosition(initPosition);
-							
-							//place back into map?
-							
-						} else {
-							
-							Word newWord = new Word(p, frequency, initPosition);
-							resultsMap.put(p, newWord);
-						}
-						
-					}
-						
-				}
-			} else {
-				System.out.println("Exact word not found in wordIndex.");
-			}
+			if(idx.containsKey(query))
+				searchHelper(query, resultsMap);
 			
 		}
 		
-		List<Word> list = new ArrayList<>(resultsMap.values());
-		
-		return list;
-	
+		return resultsMap.values();
 	}
 	
 	/** Finds any word in index that STARTS with a query word */
-	public List<Word> partialSearch(List<String> queries){
+	public Collection<Word> partialSearch(List<String> queries){
 		
 		List<String> words = copyWords();
 		HashMap<String, Word> resultsMap = new HashMap<>();
@@ -360,55 +284,35 @@ public class WordIndex {
 			
 			for(String w : words) {
 				
-				/** Checks if query is at the front */
-				if(w.indexOf(query) == 0) {
-					//System.out.println("Found " + query + " in " + w);
-					
-					//Create a Word for each path if frequency is > 0
-					for(String p : copyPaths(w)) {
-						
-						List<Integer> positions = copyPositions(w, p);
-						
-						if(positions.size() > 0) {
-							
-							int frequency = positions.size();
-							
-							/** Assuming the list is already sorted */
-							int initPosition = positions.get(0);
-							
-							//Check if path is already present in map
-							if(resultsMap.containsKey(p)) {
-								//update existing Word
-								
-								Word existingWord = resultsMap.get(p);
-								
-								//+= frequency
-								existingWord.addToFrequency(frequency);
-								
-								//updates position if less than current one
-								existingWord.updatePosition(initPosition);
-								
-								//place back into map?
-								
-							} else {
-								
-								Word newWord = new Word(p, frequency, initPosition);
-								resultsMap.put(p, newWord);
-							}
-							
-						}
-							
-					}
-					
+				if(w.indexOf(query) == 0) { /** Partial search */
+					searchHelper(w, resultsMap);
 				}
 			}
-			
 		}
-		
-		List<Word> list = new ArrayList<>(resultsMap.values());
-		
-		return list;
+
+		return resultsMap.values();
 	}
 	
-	
+	private void searchHelper(String w, Map<String, Word> resultsMap) {
+		
+		for(String p : copyPaths(w)) {
+			
+			List<Integer> positions = copyPositions(w, p);
+			
+			int frequency = positions.size();
+				
+			/** Assuming the list is already sorted */
+			int initPosition = positions.get(0);
+				
+			if(resultsMap.containsKey(p)) {
+				resultsMap.get(p).update(frequency, initPosition);
+			} else {
+				Word newWord = new Word(p, frequency, initPosition);
+				resultsMap.put(p, newWord);
+			}
+				
+		}
+		
+	}
+
 }

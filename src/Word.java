@@ -47,6 +47,14 @@ public class Word implements Comparable<Word> {
 		
 	}
 	
+	public void update(int frequency, int position) {
+		this.frequency += frequency;
+		
+		if(position < this.position) {
+			this.position = position;
+		}
+	}
+	
 	public void addToFrequency(int frequency) {
 		this.frequency += frequency;
 	}
@@ -73,35 +81,35 @@ public class Word implements Comparable<Word> {
 		
 	}
 	
-	public static final Comparator<Word> POSITION_COMPARATOR = new Comparator<Word>() {
-		
-		@Override
-		public int compare(Word o1, Word o2) {
-			
-			int positionCompare = Integer.compare(o1.position, o2.position);
-			
-			if( positionCompare == 0)
-				return o1.compareTo(o2);
-			
-			return positionCompare;
-		}
-		
-	};
+//	public static final Comparator<Word> POSITION_COMPARATOR = new Comparator<Word>() {
+//		
+//		@Override
+//		public int compare(Word o1, Word o2) {
+//			
+//			int positionCompare = Integer.compare(o1.position, o2.position);
+//			
+//			if( positionCompare == 0)
+//				return o1.compareTo(o2);
+//			
+//			return positionCompare;
+//		}
+//		
+//	};
 	
-	public static final Comparator<Word> PATH_COMPARATOR	= new Comparator<Word>() {
-		
-		@Override
-		public int compare(Word o1, Word o2) {
-			
-			int pathCompare = o1.path.compareToIgnoreCase(o2.path);
-			
-			if(pathCompare == 0)
-				return o1.compareTo(o2);
-			
-			return pathCompare;
-		}
-		
-	};
+//	public static final Comparator<Word> PATH_COMPARATOR	= new Comparator<Word>() {
+//		
+//		@Override
+//		public int compare(Word o1, Word o2) {
+//			
+//			int pathCompare = o1.path.compareToIgnoreCase(o2.path);
+//			
+//			if(pathCompare == 0)
+//				return o1.compareTo(o2);
+//			
+//			return pathCompare;
+//		}
+//		
+//	};
 	
 	public static final ArrayList<Word> listByNaturalOrder(Collection<Word> words) {
 		
