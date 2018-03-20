@@ -69,7 +69,7 @@ public class QueryHelper {
 	/** Use appropriate search from WordIndex and save results */
 	private void search(String queriesStr, WordIndex wordIndex){
 		
-		System.out.println("query: " + queriesStr);
+		//System.out.println("query: " + queriesStr);
 			
 		List<String> queriesList = Arrays.asList(queriesStr.split(" "));
 		

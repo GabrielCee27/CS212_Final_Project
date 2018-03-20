@@ -194,8 +194,6 @@ public class Driver {
 			
 			recTraverse(wordIndex, file);
 				
-		} else {
-			System.out.println("No path given.");
 		}
 
 		
@@ -211,8 +209,6 @@ public class Driver {
 				e.printStackTrace();
 			}
 			
-		} else {
-			System.out.println("No index path given.");
 		}
 		
 		if(argMap.hasFlag("-query") && argMap.hasValue("-query")) {
@@ -229,8 +225,6 @@ public class Driver {
 				e.printStackTrace();
 			}
 			
-		} else {
-			System.out.println("No query path given.");
 		}
 		
 		
