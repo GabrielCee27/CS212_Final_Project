@@ -82,7 +82,7 @@ public class ArgumentMap {
 		arg.trim();
 		
 		if(arg.equalsIgnoreCase("-index") || arg.equalsIgnoreCase("-path") || arg.equalsIgnoreCase("-url") 
-				|| arg.equalsIgnoreCase("-query") || arg.equalsIgnoreCase("-exact") || arg.equalsIgnoreCase("-results")) {
+				|| arg.equalsIgnoreCase("-query") || arg.equalsIgnoreCase("-exact") || arg.equalsIgnoreCase("-results") || arg.equalsIgnoreCase("-threads") ) {
 			return true;
 		}
 		
