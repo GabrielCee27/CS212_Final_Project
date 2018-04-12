@@ -178,6 +178,34 @@ public class ArgumentMap {
 		
 		return defaultValue;
 	}
+	
+	/**
+	 * Returns the value for the specified flag as an int. If the flag
+	 * is missing or the flag does not have a value or if the value is unconvertable
+	 * returns defaultValue.
+	 *
+	 * @param flag
+	 *            flag to get value for
+	 * @param defaultValue
+	 *            value to return if flag or value is not an int
+	 * @return value of flag as a String, or the default value if the flag or
+	 *         value is missing
+	 */
+	public int getInt(String flag, int defaultValue) {
+		
+		if(hasFlag(flag) && hasValue(flag)) {
+			try {
+				int value = Integer.parseInt(getString(flag));
+				return value;
+			}
+			catch(NumberFormatException e) {
+				System.out.println(e);
+				return defaultValue;
+			}
+		}
+			
+		return defaultValue;
+	}
 
 	/**
 	 * Returns the value for the specified flag as an int value. If the flag is
