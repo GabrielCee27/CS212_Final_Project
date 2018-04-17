@@ -1,8 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 /**
  * Recognizes flags and values and puts it into a Map.
  */
@@ -44,16 +42,13 @@ public class ArgumentMap {
 			
 			if(isFlag(args[i])) {
 				
-				//System.out.println("flag");
-				
 				// check if there is a value
 				if( (i+1 < args.length) && isValue(args[i+1]) )  {
-					
 					map.put(args[i], args[i+1]);
 					i = i+1;
 					
-				} else { //if not a value or no value found
-					//System.out.println("No value");
+				} else { 
+					//if not a value or no value found
 					
 					if(hasFlag(args[i])) {
 						map.replace(args[i], null);
@@ -77,7 +72,6 @@ public class ArgumentMap {
 	 * @return boolean
 	 */
 	public static boolean isFlag(String arg) {
-		//valid flags: "-path" or "-index"
 		
 		arg.trim();
 		
