@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Data structure to store words and their positions.
@@ -26,7 +25,6 @@ public class WordIndex {
 	 */
 	public WordIndex() {
 		//idx = new TreeMap<>();
-		
 		idx = new HashMap<>();
 	}
 
@@ -41,7 +39,7 @@ public class WordIndex {
 	 *            position word was found
 	 */
 	public void add(String word, String path, int position) {
-
+	
 		if(idx.containsKey(word)) {
 			//already has key
 			
@@ -240,9 +238,9 @@ public class WordIndex {
 		return list;
 	}
 	
-	public Set<Entry<String, Map<String, Set<Integer>>>> wordsEntrySet() {
-		return idx.entrySet();
-	}
+//	public Set<Entry<String, Map<String, Set<Integer>>>> wordsEntrySet() {
+//		return idx.entrySet();
+//	}
 	
 	/**
 	 * Returns a string representation of this index.
@@ -256,51 +254,61 @@ public class WordIndex {
 	 * Matches any word from the inverted index that exactly matches the query word.
 	 * 
 	 * @param queries
-	 * 		parsed words alphabetically ordered from a single line
+	 * 		list of words alphabetically ordered
 	 * @return
-	 * 		a sorted list of search results
+	 * 		a collection of search results
 	 */
 	public Collection<Word> exactSearch(List<String> queries) {
 		
 		HashMap<String, Word> resultsMap = new HashMap<>();
 		
-		for(String query : queries) {
-			
+		for(String query : queries)
 			if(idx.containsKey(query))
-				searchHelper(query, resultsMap);
-			
-		}
+				searchHandler(query, resultsMap);
 		
 		return resultsMap.values();
 	}
 	
-	/** Finds any word in index that STARTS with a query word */
+	/**
+	 * Matches any word from the index that STARTS with the query word.
+	 * 
+	 * @param queries
+	 * 		list of words alphabetically ordered
+	 * @return
+	 * 		a collection of search results
+	 */
 	public Collection<Word> partialSearch(List<String> queries){
 		
 		List<String> words = copyWords();
 		HashMap<String, Word> resultsMap = new HashMap<>();
 		
-		for(String query : queries) {
-			
-			for(String w : words) {
-				
-				if(w.indexOf(query) == 0) { /** Partial search */
-					searchHelper(w, resultsMap);
-				}
-			}
-		}
+		for(String query : queries)
+			for(String w : words)
+				if(w.indexOf(query) == 0) /** Partial search */
+					searchHandler(w, resultsMap);
 
 		return resultsMap.values();
 	}
 	
-	private void searchHelper(String w, Map<String, Word> resultsMap) {
+	
+	/** 
+	 * Retrieves the information needed from the index of the found word and updates the resultsMap.
+	 * 
+	 * @param w
+	 * 		word that is found from the search
+	 * @param resultsMap
+	 * 		Holds the results of the search
+	 * 
+	 * @see Word#update(int, int)
+	 */
+	private void searchHandler(String w, Map<String, Word> resultsMap) {
 		
 		for(String p : copyPaths(w)) {
 			
 			List<Integer> positions = copyPositions(w, p);
 			
 			int frequency = positions.size();
-				
+			
 			/** Assuming the list is already sorted */
 			int initPosition = positions.get(0);
 				
@@ -309,10 +317,8 @@ public class WordIndex {
 			} else {
 				Word newWord = new Word(p, frequency, initPosition);
 				resultsMap.put(p, newWord);
-			}
-				
-		}
-		
+			}	
+		}	
 	}
 
 }

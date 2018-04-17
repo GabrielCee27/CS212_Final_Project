@@ -9,19 +9,24 @@ import java.io.IOException;
  */
 public class Driver {
 
-	
 	public static void main(String[] args) {
 		
 		ArgumentMap argMap = new ArgumentMap(args);
 		
-		WordIndex wordIndex = new WordIndex();
+		/** Get the number of threads */
+		int threads = 1;
+		if(argMap.hasFlag("-threads")) {
+			threads = argMap.getInt("-threads", 5);
+		}
+		//System.out.println("Number of threads: " + threads);
 		
-		IndexHelper idxHelper = new IndexHelper();
+		WorkQueue queue = new WorkQueue(threads);
 		
-		QueryHelper queryHelper = new QueryHelper();
+		ThreadSafeWordIndex wordIndex = new ThreadSafeWordIndex();
+		
+		IndexHelper idxHelper = new IndexHelper(wordIndex, queue);
 		
 		if(argMap.hasFlag("-path") && argMap.hasValue("-path")) { 
-			
 			//Normalizing
 //			Path p = Paths.get(argMap.getString("-path"));	
 //			File file = new File(p.normalize().toString());
@@ -29,25 +34,39 @@ public class Driver {
 			String pathStr = argMap.getString("-path");
 			File file = new File(pathStr);
 			
-			idxHelper.recTraverse(wordIndex, file);
+			/** Start building the index with file/dir */
+			//idxHelper.recTraverse(wordIndex, file);
+			idxHelper.dirTraverse(file);
 		}
-
+		
+		//ERROR: Need to write to file only after the index is done building
+		//Added a delay to let finish() work effectively
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+		
+		queue.finish();
+		
+		//System.out.println("Index is done being built.");
+		//System.out.println(wordIndex.toString());
 		
 		if(argMap.hasFlag("-index")) {
-			/** Indication that the wordIndex needs to be written to an output file */
+			/** wordIndex needs to be written to an output file */
 		
-			// retrieving path
 			String defaultPath = Paths.get(".", "index.json").toString();
 			Path indexPath = Paths.get(argMap.getString("-index", defaultPath));
 			indexPath = indexPath.toAbsolutePath().normalize();
-				
+
 			try {
 				JSONWriter.asWordIndex(wordIndex, indexPath);
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
-			
+			}	
 		}
+		
+		QueryHelper queryHelper = new QueryHelper(queue);
 		
 		if(argMap.hasFlag("-query") && argMap.hasValue("-query")) {
 			
@@ -65,29 +84,34 @@ public class Driver {
 			
 		}
 		
+//		try {
+//			Thread.sleep(2000);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+		
+		queue.finish();
+		
+		// Don't continue until queue results is done being built
+		//System.out.println("Queue results done being built.");
 		
 		if(argMap.hasFlag("-results")) {
+			
+			//TODO: Safely get query results info
+			//synchronize?
 			
 			String resultsDefaultPathStr = Paths.get(".", "results.json").toString();
 			Path resultsPath = Paths.get(argMap.getString("-results", resultsDefaultPathStr));
 			resultsPath = resultsPath.toAbsolutePath().normalize();
 			
 			try {
-				
 				JSONWriter.asQueriesResults(queryHelper, resultsPath);
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		/** Getting number of threads */
-		int numOfThreads = 1;
-		if(argMap.hasFlag("-threads")) {
-			numOfThreads = argMap.getInt("-threads", 5);
-		}
-		//System.out.println("numOfThreads: " + numOfThreads);
-
+		queue.shutdown();
 	} // main
 
 }

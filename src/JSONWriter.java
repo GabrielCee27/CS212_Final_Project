@@ -236,7 +236,7 @@ public class JSONWriter {
 	 *            path to write file
 	 * @throws IOException 
 	 */
-	public static void asWordIndex(WordIndex wordIndex, Path p) throws IOException {
+	public static void asWordIndex(ThreadSafeWordIndex wordIndex, Path p) throws IOException {
 		
 		try(
 				BufferedWriter writer = Files.newBufferedWriter(p, StandardCharsets.UTF_8);
@@ -319,14 +319,15 @@ public class JSONWriter {
 		
 		writer.write(indent(level) + "{\n");
 		
-		writer.write(indent(level + 1) + "\"where\": " + quote(word.path) + ",\n");
+		writer.write(indent(level + 1) + "\"where\": " + quote(word.getPath()) + ",\n");
 		
-		writer.write(indent(level + 1) + "\"count\": " + word.frequency + ",\n");
+		writer.write(indent(level + 1) + "\"count\": " + word.getFrequency() + ",\n");
 		
-		writer.write(indent(level + 1) + "\"index\": " + word.position + "\n");
+		writer.write(indent(level + 1) + "\"index\": " + word.getPosition() + "\n");
 		
 		writer.write(indent(level) + "}");
 	}
+	
 	
 	public static void asQueriesResults(QueryHelper queriesResults, Path path) throws IOException {
 		

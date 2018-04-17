@@ -2,31 +2,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
+/**
+ * 
+ *
+ */
 public class Word implements Comparable<Word> {
 	
 	/** Frequency of word */
-	public int frequency;
+	private int frequency;
 	
 	/** Initial position */
-	public int position;
+	private int position;
 	
 	/** Path of file where the word was found */
-	public final String path;
+	private final String path;
 	
 	
 	/**
 	 * Initializes a word from the provided parameters.
-	 *
-	 * @param word
-	 *           Word as a string
+	 * 
+	 * @param path
+	 *            Location
 	 * @param frequency
 	 *            Frequency of word
 	 * @param position
 	 *            Initial position
-	 * @param path
-	 *            Location
 	 */
 	public Word(String path, int frequency, int position) {
 		this.frequency = frequency;
@@ -34,29 +35,31 @@ public class Word implements Comparable<Word> {
 		this.path = path;
 	}
 	
+	public String getPath() {
+		return path;
+	}
+	
+	public int getFrequency() {
+		return frequency;
+	}
+	
+	public int getPosition() {
+		return position;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%d times, %d position, at path: %s.", this.frequency, this.position, this.path);
 	}
 	
-	public void updatePosition(int position) {
-		
-		if(position < this.position) {
-			this.position = position;
-		}
-		
-	}
 	
 	public void update(int frequency, int position) {
+		
 		this.frequency += frequency;
 		
 		if(position < this.position) {
 			this.position = position;
 		}
-	}
-	
-	public void addToFrequency(int frequency) {
-		this.frequency += frequency;
 	}
 	
 	public int compareTo(Word other) { //Natural order
@@ -80,36 +83,6 @@ public class Word implements Comparable<Word> {
 		}
 		
 	}
-	
-//	public static final Comparator<Word> POSITION_COMPARATOR = new Comparator<Word>() {
-//		
-//		@Override
-//		public int compare(Word o1, Word o2) {
-//			
-//			int positionCompare = Integer.compare(o1.position, o2.position);
-//			
-//			if( positionCompare == 0)
-//				return o1.compareTo(o2);
-//			
-//			return positionCompare;
-//		}
-//		
-//	};
-	
-//	public static final Comparator<Word> PATH_COMPARATOR	= new Comparator<Word>() {
-//		
-//		@Override
-//		public int compare(Word o1, Word o2) {
-//			
-//			int pathCompare = o1.path.compareToIgnoreCase(o2.path);
-//			
-//			if(pathCompare == 0)
-//				return o1.compareTo(o2);
-//			
-//			return pathCompare;
-//		}
-//		
-//	};
 	
 	public static final ArrayList<Word> listByNaturalOrder(Collection<Word> words) {
 		
