@@ -132,8 +132,15 @@ public class QueryHelper {
 				
 				if(!cleanedTxt.isEmpty()) {
 					String sortedQueries = sortQueries(cleanedTxt);
-					if(!queriesResults.containsKey(sortedQueries))
-						queue.execute(new SearchTask(sortedQueries, wordIndex));
+					if(!queriesResults.containsKey(sortedQueries)) {
+						if(exactSearch) {
+							queue.execute(new exactSearchTask(sortedQueries, wordIndex));
+						}
+						else {
+							queue.execute(new partialSearchTask(sortedQueries, wordIndex));
+						}
+					}
+					
 				}	
 					
 			}
@@ -215,6 +222,66 @@ public class QueryHelper {
 				//System.out.println("queriesResults now: " + queriesResults.toString());
 			}
 			
+		}
+		
+	}
+	
+	public class exactSearchTask implements Runnable{
+
+		private ThreadSafeWordIndex idx;
+		
+		private String queriesStr;
+		
+		private List<String> queriesList;
+		
+		private HashSet<Word> resultsHashSet;
+		
+		public exactSearchTask(String queriesStr, ThreadSafeWordIndex wordIndex) {
+			this.queriesStr = queriesStr;
+			this.queriesList = Arrays.asList(queriesStr.split(" "));
+			this.resultsHashSet = new HashSet<>();
+			this.idx = wordIndex;
+		}
+		
+		@Override
+		public void run() {
+			resultsHashSet.addAll(idx.exactSearch(queriesList));
+			
+			
+			synchronized(queriesResults) {
+				queriesResults.put(queriesStr, resultsHashSet);
+				//System.out.println("queriesResults now: " + queriesResults.toString());
+			}
+		}
+		
+	}
+	
+	public class partialSearchTask implements Runnable{
+
+		private ThreadSafeWordIndex idx;
+		
+		private String queriesStr;
+		
+		private List<String> queriesList;
+		
+		private HashSet<Word> resultsHashSet;
+		
+		public partialSearchTask(String queriesStr, ThreadSafeWordIndex wordIndex) {
+			this.queriesStr = queriesStr;
+			this.queriesList = Arrays.asList(queriesStr.split(" "));
+			this.resultsHashSet = new HashSet<>();
+			this.idx = wordIndex;
+		}
+		
+		@Override
+		public void run() {
+			resultsHashSet.addAll(idx.partialSearch(queriesList));
+			
+			
+			synchronized(queriesResults) {
+				queriesResults.put(queriesStr, resultsHashSet);
+				//System.out.println("queriesResults now: " + queriesResults.toString());
+			}
 		}
 		
 	}
