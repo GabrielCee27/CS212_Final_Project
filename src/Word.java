@@ -4,8 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
+ * Uses frequency, position, and path to compare words.
  * 
- *
+ * @see Comparable
  */
 public class Word implements Comparable<Word> {
 	
@@ -52,7 +53,12 @@ public class Word implements Comparable<Word> {
 		return String.format("%d times, %d position, at path: %s.", this.frequency, this.position, this.path);
 	}
 	
-	
+	/**
+	 * Updates position and frequency appropriately.
+	 * 
+	 * @param frequency
+	 * @param position
+	 */
 	public void update(int frequency, int position) {
 		
 		this.frequency += frequency;
@@ -62,6 +68,14 @@ public class Word implements Comparable<Word> {
 		}
 	}
 	
+	/**
+	 * Compares Word by frequency in descending order. If frequency is the same,
+	 * compares Word by position in ascending order. If position is the same,
+	 * compares Word by path in ascending order.
+	 * 
+	 * @param other
+	 * 			Word to compare to
+	 */
 	public int compareTo(Word other) { //Natural order
 		
 		int frequencyCompare = Integer.compare(other.frequency, this.frequency);
@@ -84,6 +98,13 @@ public class Word implements Comparable<Word> {
 		
 	}
 	
+	/**
+	 * Returns an ArrayList of Words by natural order
+	 * 
+	 * @param words
+	 * 			collection of words to sort
+	 * @return sorted ArrayList of Words
+	 */
 	public static final ArrayList<Word> listByNaturalOrder(Collection<Word> words) {
 		
 		ArrayList<Word> list = new ArrayList<Word>(words);

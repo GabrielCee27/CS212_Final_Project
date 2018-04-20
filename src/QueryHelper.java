@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+
 /**
  * Parses queries and saves the results into a HashSet.
  */
@@ -24,10 +25,14 @@ public class QueryHelper {
 	
 	private final WorkQueue queue;
 	
+	//TODO: Add and implement
 	//private ThreadSafeWordIndex idx;
 	
 	/**
-	 * Exact search is off by default.
+	 * Initializes QueryHelper. Exact search is off by default.
+	 * 
+	 * @param queue
+	 * 			WorkQueue to use
 	 */
 	public QueryHelper(WorkQueue queue) {
 		this.queriesResults = new HashMap<>();
@@ -101,7 +106,17 @@ public class QueryHelper {
 		
 	}
 	
-public void parseAndSearchFile(Path path, ThreadSafeWordIndex wordIndex) throws IOException {
+	/**
+	 * Parses file and searches line by line and creates a new task for each query.
+	 * 
+	 * @param path
+	 * 			Query file location
+	 * @param wordIndex
+	 * 			ThreadSafeWordIndex to search from
+	 * @throws IOException
+	 * @see {@link WorkQueue#execute(Runnable)}
+	 */
+	public void parseAndSearchFile(Path path, ThreadSafeWordIndex wordIndex) throws IOException {
 		
 		try(
 				BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
@@ -114,9 +129,8 @@ public void parseAndSearchFile(Path path, ThreadSafeWordIndex wordIndex) throws 
 				
 				if(!cleanedTxt.isEmpty()) {
 					String sortedQueries = sortQueries(cleanedTxt);
-					if(!queriesResults.containsKey(sortedQueries)) {
+					if(!queriesResults.containsKey(sortedQueries))
 						queue.execute(new SearchTask(sortedQueries, wordIndex));
-					}
 				}	
 					
 			}
@@ -151,6 +165,14 @@ public void parseAndSearchFile(Path path, ThreadSafeWordIndex wordIndex) throws 
 		queriesResults.put(queriesStr, resultsHashSet);
 	}
 
+	/**
+	 * A task that can be added to the queue. Searches using
+	 * multithreading.
+	 *
+	 * 
+	 * @see Runnable
+	 *
+	 */
 	private class SearchTask implements Runnable{
 		
 		ThreadSafeWordIndex idx;
@@ -161,6 +183,14 @@ public void parseAndSearchFile(Path path, ThreadSafeWordIndex wordIndex) throws 
 		
 		HashSet<Word> resultsHashSet;
 		
+		/**
+		 * Initializes SearchTask
+		 * 
+		 * @param queriesStr
+		 * 			query as a string
+		 * @param wordIndex
+		 * 			index to search
+		 */
 		public SearchTask(String queriesStr, ThreadSafeWordIndex wordIndex) {
 			this.queriesStr = queriesStr;
 			this.queriesList = Arrays.asList(queriesStr.split(" "));

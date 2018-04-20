@@ -100,17 +100,6 @@ public class WorkQueue {
 	 * Waits for all pending work to be finished.
 	 */
 	public synchronized void finish() {
-		/*
-		 * TODO
-		 * (1) Add pending variable and initialize properly.
-		 * (2) Increment pending variable (safely) where appropriate.
-		 * (3) Decrement pending variable (safely) where appropriate.
-		 * (4) Wait until all pending work is complete in finish() method.
-		 * 
-		 * Hint: Use the same lock for synchronization that is already being
-		 * used in this class. This helps prevent deadlock, but comes with
-		 * an efficiency cost.
-		 */
 		
 		try {
 			while(pending > 0) {

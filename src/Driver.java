@@ -5,7 +5,7 @@ import java.io.IOException;
 
 
 /**
- * Driver to build a word index from HTML/HTM files and handle search queries
+ * Driver to build a word index from HTML/HTM files and handle search queries.
  */
 public class Driver {
 
@@ -35,17 +35,11 @@ public class Driver {
 			File file = new File(pathStr);
 			
 			/** Start building the index with file/dir */
-			//idxHelper.recTraverse(wordIndex, file);
 			idxHelper.dirTraverse(file);
+			
+			// Project 2
+			//idxHelper.recTraverse(wordIndex, file);
 		}
-		
-		//ERROR: Need to write to file only after the index is done building
-		//Added a delay to let finish() work effectively
-//		try {
-//			Thread.sleep(2000);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
 		
 		queue.finish();
 		
@@ -84,15 +78,8 @@ public class Driver {
 			
 		}
 		
-//		try {
-//			Thread.sleep(2000);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-		
 		queue.finish();
-		
-		// Don't continue until queue results is done being built
+
 		//System.out.println("Queue results done being built.");
 		
 		if(argMap.hasFlag("-results")) {

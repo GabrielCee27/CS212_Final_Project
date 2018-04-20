@@ -4,17 +4,8 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import javax.print.attribute.SetOfIntegerSyntax;
-
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -67,35 +58,6 @@ public class JSONWriter {
 			writer.write(indent(level) + i.toString());
 			
 			if(i != elements.last()) {
-				writer.write(",");
-			}
-			
-			writer.write("\n");
-		}
-		
-		writer.write(indent(level-1) + "]");
-	}
-	
-	/**
-	 * Writes the set of elements as a JSON array at the specified indent level.
-	 *
-	 * @param writer
-	 *            writer to use for output
-	 * @param elements
-	 *            elements to write as JSON array
-	 * @param level
-	 *            number of times to indent the array itself
-	 * @throws IOException
-	 */
-	private static void asArray(Writer writer, List <Integer> elements, int level) throws IOException {
-		
-		writer.write("[\n");
-			
-		for(int i=0; i< elements.size(); i++) {
-			
-			writer.write(indent(level) + elements.get(i).toString());
-			
-			if(i != elements.size()-1) {
 				writer.write(",");
 			}
 			
@@ -315,6 +277,17 @@ public class JSONWriter {
 		
 	}
 	
+	/**
+	 * Writes a Word as a JSON object with the indicated number of levels.
+	 *
+	 * @param writer
+	 *            where to write to
+	 * @param Word
+	 *            Word to write as a JSON object
+	 * @param level
+	 * 			  indent level
+	 * @throws IOException 
+	 */
 	public static void asWord(Writer writer, Word word, int level) throws IOException {
 		
 		writer.write(indent(level) + "{\n");
@@ -329,6 +302,15 @@ public class JSONWriter {
 	}
 	
 	
+	/**
+	 * Writes querieResults as a JSON object.
+	 *
+	 * @param queriesResults
+	 *            results to write as a JSON object with a nested array
+	 * @param path
+	 *            path to write file
+	 * @throws IOException 
+	 */
 	public static void asQueriesResults(QueryHelper queriesResults, Path path) throws IOException {
 		
 		try(

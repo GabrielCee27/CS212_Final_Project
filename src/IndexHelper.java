@@ -1,5 +1,3 @@
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -8,9 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Parses and builds a WordIndex
- * 
- * @author gabrielcisneros
+ * Parses and builds a WordIndex 
  */
 public class IndexHelper {
 	
@@ -19,10 +15,12 @@ public class IndexHelper {
 	private ThreadSafeWordIndex idx;
 	
 	/**
-	 * Initializes with index to populate and the number of threads to use.
+	 * Initializes with index to populate and the queue to use.
 	 * 
 	 * @param idx
-	 * @param threads
+	 * 			WordIndex to populate
+	 * @param queue
+	 * 			WorkQueue to use
 	 */
 	public IndexHelper(ThreadSafeWordIndex idx, WorkQueue queue) {
 		this.idx = idx;
@@ -94,29 +92,6 @@ public class IndexHelper {
 		
 	}
 	
-	public void buildIndex(File file) {
-//		buildIndex(this.idx, file);
-		String txt;
-		
-		try {
-			
-			txt = readFile(file.toPath());
-			
-			txt = HTMLCleaner.stripHTML(txt);
-			
-			// Avoid empty files
-			if(!txt.equals("")) { 
-				//System.out.println("Adding all...");
-				this.idx.addAll(txt.split(" "), file.toPath().toString());
-				//System.out.println("Done adding all");
-			}
-			//System.out.println(this.idx.toString());
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * Indicates whether a file is an HTML or HTM file.
 	 *
@@ -152,29 +127,41 @@ public class IndexHelper {
 	 * @see File#isFile()
 	 * @see File#isDirectory()
 	 */
-//	public void recTraverse (WordIndex wordIndex, File f) {
-//		
-//		if(f.isFile() && isHTMLorHTM(f)) {
-//			
-//			buildIndex(wordIndex, f);
-//				
-//		} else if(f.isDirectory()) {
-//			
-//			for(File recF : f.listFiles()) {
-//				recTraverse(wordIndex, recF);
-//			}
-//			
-//		} else {
-//			return;
-//		}
-//	}
+	public void recTraverse (WordIndex wordIndex, File f) {
+		
+		if(f.isFile() && isHTMLorHTM(f)) {
+			
+			buildIndex(wordIndex, f);
+				
+		} else if(f.isDirectory()) {
+			
+			for(File recF : f.listFiles()) {
+				recTraverse(wordIndex, recF);
+			}
+			
+		} else {
+			return;
+		}
+	}
 	
+	/**
+	 * If initial file is a directory, will create tasks for the queue.
+	 * If not a directory, will parse and build index without the queue.
+	 *
+	 * @param wordIndex
+	 *            WordIndex to populate.
+	 * @param f
+	 * 			File to traverse if a directory or pass to buildIndex if a 
+	 * 			valid file.
+	 * 
+	 * @see File#isFile()
+	 * @see File#isDirectory()
+	 */
 	public void dirTraverse(File file) {
 		
 		if(file.isFile() && isHTMLorHTM(file)) {
-			//System.out.println("Not a directory, building index w/o queue");
-			//synchronize?
-			buildIndex(file);
+			
+			queue.execute(new DirectoryTask(file));
 				
 		} else if(file.isDirectory()) {
 			for(File f : file.listFiles()) {
@@ -187,12 +174,19 @@ public class IndexHelper {
 
 	}
 	
+	
+	/**
+	 * A class that details what task is being placed in the work queue.
+	 * Builds a temporary WordIndex to populate and populates this WordIndex after done.
+	 * 
+	 * @see Runnable
+	 * @see WorkQueue#execute(Runnable)
+	 *
+	 */
 	private class DirectoryTask implements Runnable{
 		
 		private File file;
 		
-		//temp index that will update the actual index all at once
-		// don't need to use thread-safe version since no other threads will have access
 		private WordIndex tempIdx;
 		
 		public DirectoryTask(File file) {
@@ -205,39 +199,41 @@ public class IndexHelper {
 			
 			if(file.isFile() && isHTMLorHTM(file)) {
 				//parse file and update tempIndex
-				//Safe to do unsynchronized b/c not actual index
-				//buildIndex(tempIdx, file);
+				//Safe to do unsynchronized
+				buildIndex(tempIdx, file);
 				
-				
-				buildIndex(file);
+				//Alternative: update the index directly (slower)
+				//buildIndex(file);
 			}
-			else if(file.isDirectory()) {
-				
+			else if(file.isDirectory()) {	
 				//add new tasks to queue
 				for(File f : file.listFiles()) {
 					queue.execute(new DirectoryTask(f));
 				}
-				
 			} 
 			else {
 				return;
 			}
 			
 			/** Update index */
-			//updateIndexWith(tempIdx);
+			updateIndexWith(tempIdx);
 		}
 		
 	}
 	
-	// Do I need 'synchronized' if idx is already thread-safe
-	private synchronized void updateIndexWith(WordIndex tempIdx) {
-		//go through tempIdx to add to thread safe idx	
+	// Do I need 'synchronized' if idx is already thread-safe?
+	/**
+	 * Takes a WordIndex to update this.ThreadSafeWordIndex with
+	 * 
+	 * @param tempIdx
+	 * 
+	 * @see ThreadSafeWordIndex
+	 */
+	private void updateIndexWith(WordIndex tempIdx) {	
 		for(String word : tempIdx.copyWords()) 
 			for(String path : tempIdx.copyPaths(word)) 
 				for(Integer position : tempIdx.copyPositions(word, path)) 
-					this.idx.add(word, path, position);
-				
+					this.idx.add(word, path, position);			
 	}
-	
 	
 }
