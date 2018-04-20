@@ -28,6 +28,20 @@ public class ThreadSafeWordIndex extends WordIndex {
 		}
 	}
 	
+	public void mergeWith(WordIndex idx) {
+		lock.lockReadWrite();
+		
+		try {
+			for(String word : idx.copyWords()) 
+				for(String path : idx.copyPaths(word)) 
+					for(Integer position : idx.copyPositions(word, path)) 
+						super.add(word, path, position);
+		}
+		finally {
+			lock.unlockReadWrite();
+		}
+	}
+	
 	@Override
 	public void addAll(String[] words, String path) {
 		lock.lockReadWrite();

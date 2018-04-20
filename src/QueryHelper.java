@@ -20,8 +20,10 @@ public class QueryHelper {
 	//TODO: make thread-safe
 	public Map<String, HashSet<Word>> queriesResults;
 	
-	//Need volatile?
-	private volatile Boolean exactSearch;
+	//Can be final if able to declare at initialization
+	private final Boolean exactSearch;
+	
+	//private volatile Boolean exactSearch;
 	
 	private final WorkQueue queue;
 	
@@ -41,18 +43,19 @@ public class QueryHelper {
 	}
 	
 	/**
-	 * Turns exact search on.
+	 * Initializes QueryHelper.
+	 * 
+	 * @param queue
+	 * 			WorkQueue to use
+	 * @param exactSearchOn
+	 * 			Sets exact search on or off.
 	 */
-	public void exactSearchOn() {
-		this.exactSearch = true;
+	public QueryHelper(WorkQueue queue, boolean exactSearchOn) {
+		this.queriesResults = new HashMap<>();
+		this.exactSearch = exactSearchOn;
+		this.queue = queue;
 	}
 	
-	/**
-	 * Turns exact search off.
-	 */
-	public void exactSearchOff() {
-		this.exactSearch = false;
-	}
 	
 	/**
 	 * Sorts a string of queries alphabetically.
@@ -169,19 +172,17 @@ public class QueryHelper {
 	 * A task that can be added to the queue. Searches using
 	 * multithreading.
 	 *
-	 * 
 	 * @see Runnable
-	 *
 	 */
 	private class SearchTask implements Runnable{
 		
-		ThreadSafeWordIndex idx;
+		private ThreadSafeWordIndex idx;
 		
-		String queriesStr;
+		private String queriesStr;
 		
-		List<String> queriesList;
+		private List<String> queriesList;
 		
-		HashSet<Word> resultsHashSet;
+		private HashSet<Word> resultsHashSet;
 		
 		/**
 		 * Initializes SearchTask

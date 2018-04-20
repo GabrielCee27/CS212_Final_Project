@@ -13,6 +13,7 @@ public class Driver {
 		
 		ArgumentMap argMap = new ArgumentMap(args);
 		
+		//TODO: If no flag, run without multi-threading
 		/** Get the number of threads */
 		int threads = 1;
 		if(argMap.hasFlag("-threads")) {
@@ -60,15 +61,14 @@ public class Driver {
 			}	
 		}
 		
-		QueryHelper queryHelper = new QueryHelper(queue);
+		//QueryHelper queryHelper = new QueryHelper(queue);
+		QueryHelper queryHelper;
 		
 		if(argMap.hasFlag("-query") && argMap.hasValue("-query")) {
 			
 			Path queryPath = Paths.get(argMap.getString("-query"));
 			
-			/** Because search is being called inside the queryHelper */
-			if(argMap.hasFlag("-exact"))
-				queryHelper.exactSearchOn();
+			queryHelper = new QueryHelper(queue, argMap.hasFlag("-exact"));
 			
 			try {
 				queryHelper.parseAndSearchFile(queryPath, wordIndex);
@@ -77,16 +77,14 @@ public class Driver {
 			}
 			
 		}
+		else {
+			queryHelper = new QueryHelper(queue);
+		}
 		
 		queue.finish();
-
-		//System.out.println("Queue results done being built.");
-		
 		if(argMap.hasFlag("-results")) {
 			
-			//TODO: Safely get query results info
-			//synchronize?
-			
+			//As long as writing out results happens after finish(), it's safe.
 			String resultsDefaultPathStr = Paths.get(".", "results.json").toString();
 			Path resultsPath = Paths.get(argMap.getString("-results", resultsDefaultPathStr));
 			resultsPath = resultsPath.toAbsolutePath().normalize();

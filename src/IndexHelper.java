@@ -12,6 +12,7 @@ public class IndexHelper {
 	
 	private final WorkQueue queue;
 	
+	/** Shared index */
 	private ThreadSafeWordIndex idx;
 	
 	/**
@@ -81,9 +82,7 @@ public class IndexHelper {
 			
 			// Avoid empty files
 			if(!txt.equals("")) { 
-				//System.out.println("Adding all...");
 				wordIndex.addAll(txt.split(" "), file.toPath().toString());
-				//System.out.println("Done adding all");
 			}
 			
 		} catch (IOException e) {
@@ -158,82 +157,53 @@ public class IndexHelper {
 	 * @see File#isDirectory()
 	 */
 	public void dirTraverse(File file) {
-		
-		if(file.isFile() && isHTMLorHTM(file)) {
-			
-			queue.execute(new DirectoryTask(file));
-				
-		} else if(file.isDirectory()) {
-			for(File f : file.listFiles()) {
-				queue.execute(new DirectoryTask(f));
-			}
-			
-		} else {
-			return;
-		}
 
+		if(file.isFile() && isHTMLorHTM(file)) 
+			queue.execute(new ParseFileTask(file));	
+		else if(file.isDirectory())
+			for(File f : file.listFiles())
+				dirTraverse(f);	
+		
+		return;
 	}
 	
 	
 	/**
 	 * A class that details what task is being placed in the work queue.
-	 * Builds a temporary WordIndex to populate and populates this WordIndex after done.
+	 * Populates a temporary WordIndex and updates shared WordIndex when done.
 	 * 
 	 * @see Runnable
 	 * @see WorkQueue#execute(Runnable)
 	 *
 	 */
-	private class DirectoryTask implements Runnable{
+	private class ParseFileTask implements Runnable{
 		
+		/** File to parse and update index with */
 		private File file;
 		
+		/** Temporary index that will merge with shared index when done being populated */
 		private WordIndex tempIdx;
 		
-		public DirectoryTask(File file) {
+		/**
+		 * Initializes ParseFileTask with file to parse.
+		 * 
+		 * @param file
+		 * 			file to parse and update shared index with
+		 */
+		public ParseFileTask(File file) {
 			this.file = file;
 			this.tempIdx = new WordIndex();
 		}
 		
 		@Override
 		public void run() {
+			//parse file and populate tempIndex
+			buildIndex(tempIdx, file);
 			
-			if(file.isFile() && isHTMLorHTM(file)) {
-				//parse file and update tempIndex
-				//Safe to do unsynchronized
-				buildIndex(tempIdx, file);
-				
-				//Alternative: update the index directly (slower)
-				//buildIndex(file);
-			}
-			else if(file.isDirectory()) {	
-				//add new tasks to queue
-				for(File f : file.listFiles()) {
-					queue.execute(new DirectoryTask(f));
-				}
-			} 
-			else {
-				return;
-			}
-			
-			/** Update index */
-			updateIndexWith(tempIdx);
+			/** Update shared index */
+			idx.mergeWith(tempIdx);
 		}
 		
-	}
-	
-	// Do I need 'synchronized' if idx is already thread-safe?
-	/**
-	 * Takes a WordIndex to update this.ThreadSafeWordIndex with
-	 * 
-	 * @param tempIdx
-	 * 
-	 * @see ThreadSafeWordIndex
-	 */
-	private void updateIndexWith(WordIndex tempIdx) {	
-		for(String word : tempIdx.copyWords()) 
-			for(String path : tempIdx.copyPaths(word)) 
-				for(Integer position : tempIdx.copyPositions(word, path)) 
-					this.idx.add(word, path, position);			
 	}
 	
 }
