@@ -134,10 +134,10 @@ public class QueryHelper {
 					String sortedQueries = sortQueries(cleanedTxt);
 					if(!queriesResults.containsKey(sortedQueries)) {
 						if(exactSearch) {
-							queue.execute(new exactSearchTask(sortedQueries, wordIndex));
+							queue.execute(new ExactSearchTask(sortedQueries, wordIndex));
 						}
 						else {
-							queue.execute(new partialSearchTask(sortedQueries, wordIndex));
+							queue.execute(new PartialSearchTask(sortedQueries, wordIndex));
 						}
 					}
 					
@@ -226,7 +226,7 @@ public class QueryHelper {
 		
 	}
 	
-	public class exactSearchTask implements Runnable{
+	public class ExactSearchTask implements Runnable{
 
 		private ThreadSafeWordIndex idx;
 		
@@ -236,7 +236,7 @@ public class QueryHelper {
 		
 		private HashSet<Word> resultsHashSet;
 		
-		public exactSearchTask(String queriesStr, ThreadSafeWordIndex wordIndex) {
+		public ExactSearchTask(String queriesStr, ThreadSafeWordIndex wordIndex) {
 			this.queriesStr = queriesStr;
 			this.queriesList = Arrays.asList(queriesStr.split(" "));
 			this.resultsHashSet = new HashSet<>();
@@ -256,7 +256,7 @@ public class QueryHelper {
 		
 	}
 	
-	public class partialSearchTask implements Runnable{
+	public class PartialSearchTask implements Runnable{
 
 		private ThreadSafeWordIndex idx;
 		
@@ -266,7 +266,7 @@ public class QueryHelper {
 		
 		private HashSet<Word> resultsHashSet;
 		
-		public partialSearchTask(String queriesStr, ThreadSafeWordIndex wordIndex) {
+		public PartialSearchTask(String queriesStr, ThreadSafeWordIndex wordIndex) {
 			this.queriesStr = queriesStr;
 			this.queriesList = Arrays.asList(queriesStr.split(" "));
 			this.resultsHashSet = new HashSet<>();
