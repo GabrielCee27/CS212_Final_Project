@@ -14,7 +14,6 @@ public class Driver {
 		ArgumentMap argMap = new ArgumentMap(args);
 		
 		//TODO: If no flag, run without multi-threading
-		/** Get the number of threads */
 		int threads = 1;
 		if(argMap.hasFlag("-threads")) {
 			threads = argMap.getInt("-threads", 5);
@@ -28,12 +27,8 @@ public class Driver {
 		IndexHelper idxHelper = new IndexHelper(wordIndex, queue);
 		
 		if(argMap.hasFlag("-path") && argMap.hasValue("-path")) { 
-			//Normalizing
-//			Path p = Paths.get(argMap.getString("-path"));	
-//			File file = new File(p.normalize().toString());
-			
-			String pathStr = argMap.getString("-path");
-			File file = new File(pathStr);
+			Path p = Paths.get(argMap.getString("-path"));	
+			File file = new File(p.normalize().toString());
 			
 			/** Start building the index with file/dir */
 			idxHelper.dirTraverse(file);
@@ -42,8 +37,17 @@ public class Driver {
 			//idxHelper.recTraverse(wordIndex, file);
 		}
 		
-		queue.finish();
+		if(argMap.hasFlag("-url") && argMap.hasValue("-url")) {
+			System.out.println("url: " + argMap.getString("-url"));
+			
+			int limit = argMap.getInt("-limit", 50);
+			System.out.println("limit: " + argMap.getString("-limit"));
+			
+			//TODO: Traverse with givin URL
+		}
 		
+		/** Waits until the index is done being built until moving on */
+		queue.finish();
 		//System.out.println("Index is done being built.");
 		//System.out.println(wordIndex.toString());
 		
