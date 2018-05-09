@@ -20,18 +20,17 @@ public class Driver {
 		if(argMap.hasFlag("-threads")) {
 			threads = argMap.getInt("-threads", 5);
 		}
-		System.out.println("Number of threads: " + threads);
+		//System.out.println("Number of threads: " + threads);
 		
 		WorkQueue queue = new WorkQueue(threads);
 		
 		ThreadSafeWordIndex wordIndex = new ThreadSafeWordIndex();
 		
-		IndexHelper idxHelper = new IndexHelper(wordIndex, queue);
-		
 		if(argMap.hasFlag("-path") && argMap.hasValue("-path")) { 
 			Path p = Paths.get(argMap.getString("-path"));	
 			File file = new File(p.normalize().toString());
 			
+			IndexHelper idxHelper = new IndexHelper(wordIndex, queue);
 			/** Start building the index with file/dir */
 			idxHelper.dirTraverse(file);
 			
@@ -39,24 +38,13 @@ public class Driver {
 			//idxHelper.recTraverse(wordIndex, file);
 		}
 		
-		WebCrawler webCrawler;
 		if(argMap.hasFlag("-url") && argMap.hasValue("-url")) {
-			String urlStr = argMap.getString("-url");
-			URL url;
 			try {
-				url = new URL(urlStr);
-				
-				System.out.println("url: " + argMap.getString("-url"));
-				
+				URL url = new URL(argMap.getString("-url"));
 				int limit = argMap.getInt("-limit", 50);
-				System.out.println("limit: " + argMap.getString("-limit"));
-				
-				webCrawler = new WebCrawler(wordIndex, queue, url, limit);
-		
-				webCrawler.crawl();
-				
+				WebCrawler webCrawler = new WebCrawler(wordIndex, queue, url, limit);
+				webCrawler.crawl();	
 			} catch (MalformedURLException e) {
-				//TODO: Error handle
 				e.printStackTrace();
 			}
 		}
@@ -86,7 +74,6 @@ public class Driver {
 		if(argMap.hasFlag("-query") && argMap.hasValue("-query")) {
 			
 			Path queryPath = Paths.get(argMap.getString("-query"));
-			
 			queryHelper = new QueryHelper(queue, argMap.hasFlag("-exact"));
 			
 			try {
