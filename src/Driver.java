@@ -52,11 +52,8 @@ public class Driver {
 				System.out.println("limit: " + argMap.getString("-limit"));
 				
 				webCrawler = new WebCrawler(wordIndex, queue, url, limit);
-				
-				//TODO: Traverse with given URL
-				//webCrawler.crawl();
-				webCrawler.executeBase();
-//				webCrawler.crawlRec(url);
+		
+				webCrawler.crawl();
 				
 			} catch (MalformedURLException e) {
 				//TODO: Error handle

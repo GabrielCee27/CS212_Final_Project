@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+//TODO: Documentation
 public class WebCrawler {
 
 	/** Shared index */
@@ -23,17 +24,24 @@ public class WebCrawler {
 	/** Used to avoid repeating urls and to keep count */
 	private HashSet<URL> urlSet; 
 	
-	//TODO: Documentation
+	
 	public WebCrawler(ThreadSafeWordIndex idx, WorkQueue queue, URL base, int limit) {
 		this.idx = idx;
 		this.queue = queue;
 		this.base = base;
 		this.limit = limit;
 		this.urlSet = new HashSet<URL>();
+		
 	}
 	
-	public void crawl() {
+	public void buildIndex(WordIndex wordIndex, String file, URL url) {
 		
+		String cleanedTxt = HTMLCleaner.stripHTML(file);
+		
+		// Avoid empty files
+		if(!cleanedTxt.equals("")) { 
+			wordIndex.addAll(cleanedTxt.split(" "), url.toString());
+		}
 		
 	}
 	
@@ -67,34 +75,10 @@ public class WebCrawler {
 		else if(urlSet.size() == limit) {
 			System.out.println("Counter reached limit");
 		}
+	
+	}
 
-	}
-	
-	public void buildIndex(WordIndex wordIndex, String file, URL url) {
-		
-		String cleanedTxt = HTMLCleaner.stripHTML(file);
-		
-		// Avoid empty files
-		if(!cleanedTxt.equals("")) { 
-			wordIndex.addAll(cleanedTxt.split(" "), url.toString());
-		}
-		
-	}
-	
-	private void updateUrlSet(ArrayList<URL> urls) {
-		
-		synchronized(urlSet) {
-			for(URL url : urls)	
-				if(urlSet.size() < limit && !urlSet.contains(url) && IndexHelper.isHTMLorHTM(url.toString())) {
-					queue.execute(new WebCrawlTask(url));
-					urlSet.add(url);
-				}
-		}
-		
-	}
-	
-	public void executeBase() {
-			
+	public void crawl() {
 		String html = LinkParser.fetchHTML(base);
 		ArrayList<URL> urls = LinkParser.listLinks(base, html);
 		
@@ -107,6 +91,18 @@ public class WebCrawler {
 		WordIndex tempIdx = new WordIndex();
 		buildIndex(tempIdx, html, base);
 		this.idx.mergeWith(tempIdx);
+	}
+
+	private void updateUrlSet(ArrayList<URL> urls) {
+		
+		synchronized(urlSet) {
+			for(URL url : urls)	
+				if(urlSet.size() < limit && !urlSet.contains(url) && IndexHelper.isHTMLorHTM(url.toString())) {
+					queue.execute(new WebCrawlTask(url));
+					urlSet.add(url);
+				}
+		}
+		
 	}
 	
 	private class WebCrawlTask implements Runnable{
