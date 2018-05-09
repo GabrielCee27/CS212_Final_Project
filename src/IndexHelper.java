@@ -94,14 +94,14 @@ public class IndexHelper {
 	/**
 	 * Indicates whether a file is an HTML or HTM file.
 	 *
-	 * @param f
-	 * 			File to check
+	 * @param name
+	 * 			file name to check
 	 *            
 	 * @see String#lastIndexOf(int)
 	 * @see String#substring(int)
 	 */
-	public boolean isHTMLorHTM(File f) {
-		String name = f.getName();
+	
+	public static boolean isHTMLorHTM(String name) {
 		
 		String ext = name.substring(name.lastIndexOf(".") + 1);
 		
@@ -111,7 +111,6 @@ public class IndexHelper {
 		
 		return (ext.equals("html") || ext.equals("htm"));
 	}
-	
 	
 	/**
 	 * Recursively traverses through current directory and any sub-directories 
@@ -128,7 +127,7 @@ public class IndexHelper {
 	 */
 	public void recTraverse (WordIndex wordIndex, File f) {
 		
-		if(f.isFile() && isHTMLorHTM(f)) {
+		if(f.isFile() && isHTMLorHTM(f.getName())) {
 			
 			buildIndex(wordIndex, f);
 				
@@ -158,7 +157,7 @@ public class IndexHelper {
 	 */
 	public void dirTraverse(File file) {
 
-		if(file.isFile() && isHTMLorHTM(file)) 
+		if(file.isFile() && isHTMLorHTM(file.getName())) 
 			queue.execute(new ParseFileTask(file));	
 		else if(file.isDirectory())
 			for(File f : file.listFiles())

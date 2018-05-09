@@ -291,13 +291,9 @@ public class JSONWriter {
 	public static void asWord(Writer writer, Word word, int level) throws IOException {
 		
 		writer.write(indent(level) + "{\n");
-		
 		writer.write(indent(level + 1) + "\"where\": " + quote(word.getPath()) + ",\n");
-		
 		writer.write(indent(level + 1) + "\"count\": " + word.getFrequency() + ",\n");
-		
 		writer.write(indent(level + 1) + "\"index\": " + word.getPosition() + "\n");
-		
 		writer.write(indent(level) + "}");
 	}
 	

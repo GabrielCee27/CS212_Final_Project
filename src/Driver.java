@@ -2,6 +2,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 /**
@@ -18,7 +20,7 @@ public class Driver {
 		if(argMap.hasFlag("-threads")) {
 			threads = argMap.getInt("-threads", 5);
 		}
-		//System.out.println("Number of threads: " + threads);
+		System.out.println("Number of threads: " + threads);
 		
 		WorkQueue queue = new WorkQueue(threads);
 		
@@ -37,19 +39,35 @@ public class Driver {
 			//idxHelper.recTraverse(wordIndex, file);
 		}
 		
+		WebCrawler webCrawler;
 		if(argMap.hasFlag("-url") && argMap.hasValue("-url")) {
-			System.out.println("url: " + argMap.getString("-url"));
-			
-			int limit = argMap.getInt("-limit", 50);
-			System.out.println("limit: " + argMap.getString("-limit"));
-			
-			//TODO: Traverse with givin URL
+			String urlStr = argMap.getString("-url");
+			URL url;
+			try {
+				url = new URL(urlStr);
+				
+				System.out.println("url: " + argMap.getString("-url"));
+				
+				int limit = argMap.getInt("-limit", 50);
+				System.out.println("limit: " + argMap.getString("-limit"));
+				
+				webCrawler = new WebCrawler(wordIndex, queue, url, limit);
+				
+				//TODO: Traverse with given URL
+				//webCrawler.crawl();
+				webCrawler.executeBase();
+//				webCrawler.crawlRec(url);
+				
+			} catch (MalformedURLException e) {
+				//TODO: Error handle
+				e.printStackTrace();
+			}
 		}
 		
 		/** Waits until the index is done being built until moving on */
 		queue.finish();
-		//System.out.println("Index is done being built.");
-		//System.out.println(wordIndex.toString());
+//		System.out.println("Index is done being built.");
+//		System.out.println("wordIndex: \n" + wordIndex.toString());
 		
 		if(argMap.hasFlag("-index")) {
 			/** wordIndex needs to be written to an output file */
