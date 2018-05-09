@@ -15,7 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//TODO: Documentation
+/**
+ * Retrieves html files using sockets and parses them using regex.
+ */
 public class LinkParser {
 	
 	/** Port used by socket. For web servers, should be port 80. */
@@ -64,7 +66,6 @@ public class LinkParser {
 		String resource = url.getFile().isEmpty() ? "/" : url.getFile();
 
 		// The specification is specific about where to use a new line
-		// versus a carriage return!
 		return String.format("%s %s %s\r\n" + "Host: %s\r\n" + "Connection: close\r\n" + "\r\n", type.name(), resource,
 				version, host);
 	}
@@ -188,7 +189,6 @@ public class LinkParser {
 	 * @return cleaned list of all http(s) links in the order they were found
 	 */
 	public static ArrayList<URL> listLinks(URL base, String html) {
-		//System.out.println("listLinks html: \n" + html);
 	
 		ArrayList<URL> links = new ArrayList<URL>();
 		
@@ -201,7 +201,6 @@ public class LinkParser {
 			
 			String link = getHrefLink(m.group());	
 			if(link != "") {
-				//System.out.println("link: " + link);
 				
 				try {
 					URL absolute = new URL(base, link);
