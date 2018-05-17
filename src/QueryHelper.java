@@ -126,27 +126,33 @@ public class QueryHelper {
 		){
 			String str = null;
 			
-			while((str = reader.readLine()) != null) {
-				
-				String cleanedTxt = cleanTxt(str);
-				
-				if(!cleanedTxt.isEmpty()) {
-					String sortedQueries = sortQueries(cleanedTxt);
-					if(!queriesResults.containsKey(sortedQueries)) {
-						if(exactSearch) {
-							queue.execute(new ExactSearchTask(sortedQueries, wordIndex));
-						}
-						else {
-							queue.execute(new PartialSearchTask(sortedQueries, wordIndex));
-						}
-					}
-					
-				}	
-					
+			while((str = reader.readLine()) != null)	
+				parseAndSearchString(str, wordIndex);					
+		}
+		
+	}
+	
+	/**
+	 * Parses string and puts search tasks in the queue.
+	 * 
+	 * @param str
+	 * 			String to parse and search
+	 * @param wordIndex
+	 * 			index to populate
+	 */
+	public void parseAndSearchString(String str, ThreadSafeWordIndex wordIndex) {
+		String cleanedTxt = cleanTxt(str);
+		
+		if(!cleanedTxt.isEmpty()) {
+			String sortedQueries = sortQueries(cleanedTxt);
+			if(!queriesResults.containsKey(sortedQueries)) {
+				if(exactSearch)
+					queue.execute(new ExactSearchTask(sortedQueries, wordIndex));
+				else
+					queue.execute(new PartialSearchTask(sortedQueries, wordIndex));
 			}
 			
 		}
-		
 	}
 	
 	/** 
@@ -294,7 +300,7 @@ public class QueryHelper {
 	 * @see HTMLCleaner
 	 * @return cleaned string
 	 */
-	private String cleanTxt(String str) {
+	public static String cleanTxt(String str) {
 		String txt = HTMLCleaner.stripPunctuations(str);
 		txt = HTMLCleaner.stripNumbers(txt);
 		txt = HTMLCleaner.cleanLines(txt);

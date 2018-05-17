@@ -1,5 +1,8 @@
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.eclipse.jetty.server.Handler;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,6 +14,8 @@ import java.net.URL;
  */
 public class Driver {
 
+	public static ThreadSafeWordIndex wordIndex = new ThreadSafeWordIndex();
+	
 	public static void main(String[] args) {
 		
 		ArgumentMap argMap = new ArgumentMap(args);
@@ -23,8 +28,6 @@ public class Driver {
 		//System.out.println("Number of threads: " + threads);
 		
 		WorkQueue queue = new WorkQueue(threads);
-		
-		ThreadSafeWordIndex wordIndex = new ThreadSafeWordIndex();
 		
 		if(argMap.hasFlag("-path") && argMap.hasValue("-path")) { 
 			Path p = Paths.get(argMap.getString("-path"));	
@@ -63,6 +66,7 @@ public class Driver {
 
 			try {
 				JSONWriter.asWordIndex(wordIndex, indexPath);
+				System.out.println("index results can be found at: " + indexPath.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}	
@@ -97,7 +101,18 @@ public class Driver {
 			
 			try {
 				JSONWriter.asQueriesResults(queryHelper, resultsPath);
+				System.out.println("query results can be found at: " + resultsPath.toString());
 			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(argMap.hasFlag("-port")) {
+			Integer port = argMap.getInt("-port", 8080);
+			try {
+				//Change main arguments to int?
+				SearchEngineServer.main(new String[] {port.toString()});
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
